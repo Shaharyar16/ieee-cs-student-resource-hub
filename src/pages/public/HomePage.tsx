@@ -8,9 +8,7 @@ import EventsShowcase from '@/components/home/EventsShowcase';
 import ProjectShowcase from '@/components/home/ProjectShowcase';
 import HierarchyOrbit from '@/components/home/HierarchyOrbit';
 import AnimatedBackground from '@/components/effects/AnimatedBackground';
-import CursorField from '@/components/effects/CursorField';
 import ScrollProgress from '@/components/effects/ScrollProgress';
-import CurvedScrollBar from '@/components/effects/CurvedScrollBar';
 import Magnetic from '@/components/effects/Magnetic';
 import { events } from '@/data/events';
 import { projects } from '@/data/projects';
@@ -19,11 +17,9 @@ export default function HomePage() {
   const upcoming = useMemo(() => events.filter((e) => e.timing === 'upcoming').slice(0, 5), []);
 
   return (
-    <div className="cursor-none-fine relative">
+    <div className="relative">
       <AnimatedBackground />
-      <CursorField />
       <ScrollProgress />
-      <CurvedScrollBar />
 
       <HeroSection />
       <HierarchyOrbit />

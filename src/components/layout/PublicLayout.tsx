@@ -3,12 +3,20 @@ import { motion } from 'framer-motion';
 import Header from '@/components/navigation/Header';
 import Footer from '@/components/layout/Footer';
 import AnnouncementBar from '@/components/navigation/AnnouncementBar';
+import ScrollToTop from '@/components/effects/ScrollToTop';
+import CursorField from '@/components/effects/CursorField';
+import CurvedScrollBar from '@/components/effects/CurvedScrollBar';
 
 export default function PublicLayout() {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="cursor-none-fine flex min-h-screen flex-col">
+      {/* Global route + ambient behaviors shared by every public page. */}
+      <ScrollToTop />
+      <CursorField />
+      <CurvedScrollBar />
+
       <AnnouncementBar />
       <Header />
       <motion.main
