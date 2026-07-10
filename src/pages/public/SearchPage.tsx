@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import PageHero from '@/components/layout/PageHero';
+import PageSection from '@/components/layout/PageSection';
 import SearchBar from '@/components/ui/SearchBar';
 import EmptyState from '@/components/ui/EmptyState';
 import { search } from '@/utils/search';
@@ -11,53 +14,77 @@ export default function SearchPage() {
   const results = search(query);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
-      <h1 className="text-3xl font-bold text-slate-900">Search</h1>
-      <p className="mt-2 text-slate-600">Search across past papers, courses, events, projects, and more.</p>
+    <div className="relative">
+      <PageHero
+        compact
+        eyebrow="Find Anything"
+        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Search' }]}
+        title="Search the Hub"
+        subtitle="Search across past papers, courses, events, projects and more — everything in one box."
+      >
+        <div className="w-full max-w-2xl">
+          <div className="rounded-2xl bg-white/95 shadow-[0_10px_40px_rgba(0,0,0,0.25)]">
+            <SearchBar
+              placeholder="Try 'DSA', 'hackathon', or 'Lab 3'..."
+              onSearch={setQuery}
+              initialValue={query}
+              size="lg"
+            />
+          </div>
+        </div>
+      </PageHero>
 
-      <div className="mt-6">
-        <SearchBar placeholder="Try 'DSA', 'hackathon', or 'Lab 3'..." onSearch={setQuery} initialValue={query} size="lg" />
-      </div>
-
-      <div className="mt-8">
+      <PageSection tone="cream" top width="narrow">
         {!query ? (
-          <EmptyState icon="search" title="Start typing to search" description="Results across the entire resource hub will appear here." />
+          <EmptyState
+            icon="search"
+            title="Start typing to search"
+            description="Results across the entire resource hub will appear here."
+          />
         ) : results.length === 0 ? (
           <EmptyState title="No results found" description={`Nothing matched "${query}".`} />
         ) : (
-          <AnimatePresence>
-            <div className="flex flex-col gap-3">
-              {results.map((r, idx) => (
-                <motion.div
-                  key={r.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, delay: idx * 0.03 }}
-                  className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <span className="rounded-full bg-ieee-blue-light px-2.5 py-0.5 text-xs font-semibold text-ieee-blue">
-                        {r.type}
-                      </span>
-                      <h3 className="mt-2 font-semibold text-slate-900">{r.title}</h3>
-                      <p className="mt-1 text-sm text-slate-500">{r.description}</p>
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {r.tags.map((t) => (
-                          <span key={t} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">#{t}</span>
-                        ))}
+          <>
+            <p className="mb-4 font-mono text-xs uppercase tracking-wider text-slate-500">
+              {results.length} {results.length === 1 ? 'result' : 'results'} for “{query}”
+            </p>
+            <AnimatePresence>
+              <div className="flex flex-col gap-3">
+                {results.map((r, idx) => (
+                  <motion.div
+                    key={r.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: idx * 0.03 }}
+                  >
+                    <Link
+                      to={r.link}
+                      data-cursor="link"
+                      className="group flex items-start justify-between gap-3 rounded-2xl border border-black/5 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-ieee-orange/30 hover:shadow-md"
+                    >
+                      <div>
+                        <span className="rounded-full bg-ieee-orange/10 px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-ieee-orange">
+                          {r.type}
+                        </span>
+                        <h3 className="mt-2 font-display font-semibold text-slate-900">{r.title}</h3>
+                        <p className="mt-1 text-sm text-slate-600">{r.description}</p>
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {r.tags.map((t) => (
+                            <span key={t} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500">
+                              #{t}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                    <Link to={r.link} className="shrink-0 rounded-lg bg-ieee-orange px-3 py-1.5 text-xs font-semibold text-white hover:bg-ieee-orange-dark">
-                      Open
+                      <ArrowRight className="mt-1 h-5 w-5 shrink-0 text-slate-300 transition-all group-hover:translate-x-1 group-hover:text-ieee-orange" />
                     </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </AnimatePresence>
+                  </motion.div>
+                ))}
+              </div>
+            </AnimatePresence>
+          </>
         )}
-      </div>
+      </PageSection>
     </div>
   );
 }
