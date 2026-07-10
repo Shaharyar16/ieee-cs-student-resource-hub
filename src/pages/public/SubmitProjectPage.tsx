@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PageHero from '@/components/layout/PageHero';
+import PageSection from '@/components/layout/PageSection';
 import FormShell from '@/components/ui/FormShell';
 import { FormField, TextInput, TextArea } from '@/components/ui/FormField';
 import FileUploadBox from '@/components/ui/FileUploadBox';
@@ -25,47 +27,84 @@ export default function SubmitProjectPage() {
     setSubmitted(true);
   };
 
-  if (submitted) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-14">
-        <SuccessState
-          title="Project submitted!"
-          description="Thanks for sharing your work. It will appear in the expo once reviewed."
-          action={
-            <Link to="/projects-expo" className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark">
-              Back to Projects Expo
-            </Link>
-          }
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="px-4 py-14 sm:px-6">
-      <FormShell title="Submit Your Project" description="Share your semester project with the whole department." onSubmit={handleSubmit} submitLabel="Submit Project">
-        <FormField label="Project Title" required>
-          <TextInput required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. CampusNav" />
-        </FormField>
-        <FormField label="Tagline" required>
-          <TextInput required value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} placeholder="One-line summary" />
-        </FormField>
-        <FormField label="Team Members" required hint="Comma-separated names">
-          <TextInput required value={form.team} onChange={(e) => setForm({ ...form, team: e.target.value })} placeholder="Ali Hamza, Zainab Iqbal" />
-        </FormField>
-        <FormField label="Supervisor" required>
-          <TextInput required value={form.supervisor} onChange={(e) => setForm({ ...form, supervisor: e.target.value })} placeholder="Dr. Imran Sheikh" />
-        </FormField>
-        <FormField label="GitHub URL">
-          <TextInput value={form.githubUrl} onChange={(e) => setForm({ ...form, githubUrl: e.target.value })} placeholder="https://github.com/..." />
-        </FormField>
-        <FormField label="Project Description" required>
-          <TextArea required placeholder="Describe the problem, solution, and features..." />
-        </FormField>
-        <FormField label="Upload Screenshots">
-          <FileUploadBox accept="image/*" />
-        </FormField>
-      </FormShell>
+    <div className="relative">
+      <PageHero
+        compact
+        eyebrow="Show your work"
+        breadcrumb={[
+          { label: 'Home', to: '/' },
+          { label: 'Projects Expo', to: '/projects-expo' },
+          { label: 'Submit' },
+        ]}
+        title="Submit Your Project"
+        subtitle="Share your semester project with the whole department. Approved submissions appear in the expo for everyone to explore."
+      />
+
+      <PageSection tone="cream" top>
+        {submitted ? (
+          <SuccessState
+            title="Project submitted!"
+            description="Thanks for sharing your work. It will appear in the expo once reviewed."
+            action={
+              <Link
+                to="/projects-expo"
+                className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark"
+              >
+                Back to Projects Expo
+              </Link>
+            }
+          />
+        ) : (
+          <FormShell onSubmit={handleSubmit} submitLabel="Submit Project">
+            <FormField label="Project Title" required>
+              <TextInput
+                required
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder="e.g. CampusNav"
+              />
+            </FormField>
+            <FormField label="Tagline" required>
+              <TextInput
+                required
+                value={form.tagline}
+                onChange={(e) => setForm({ ...form, tagline: e.target.value })}
+                placeholder="One-line summary"
+              />
+            </FormField>
+            <FormField label="Team Members" required hint="Comma-separated names">
+              <TextInput
+                required
+                value={form.team}
+                onChange={(e) => setForm({ ...form, team: e.target.value })}
+                placeholder="Ali Hamza, Zainab Iqbal"
+              />
+            </FormField>
+            <FormField label="Supervisor" required>
+              <TextInput
+                required
+                value={form.supervisor}
+                onChange={(e) => setForm({ ...form, supervisor: e.target.value })}
+                placeholder="Dr. Imran Sheikh"
+              />
+            </FormField>
+            <FormField label="GitHub URL">
+              <TextInput
+                value={form.githubUrl}
+                onChange={(e) => setForm({ ...form, githubUrl: e.target.value })}
+                placeholder="https://github.com/..."
+              />
+            </FormField>
+            <FormField label="Project Description" required>
+              <TextArea required placeholder="Describe the problem, solution, and features..." />
+            </FormField>
+            <FormField label="Upload Screenshots">
+              <FileUploadBox accept="image/*" />
+            </FormField>
+          </FormShell>
+        )}
+      </PageSection>
     </div>
   );
 }
