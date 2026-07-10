@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { events } from '@/data/events';
+import PageHero from '@/components/layout/PageHero';
+import PageSection from '@/components/layout/PageSection';
 import EventCard from '@/components/cards/EventCard';
 import EmptyState from '@/components/ui/EmptyState';
 import type { EventCategory, EventTiming } from '@/types';
@@ -26,46 +28,67 @@ export default function EventsPage() {
     return events.filter((e) => e.category === tab);
   }, [tab]);
 
+  const upcomingCount = events.filter((e) => e.timing === 'upcoming').length;
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-      <h1 className="text-3xl font-bold text-slate-900">Events</h1>
-      <p className="mt-2 text-slate-600">Workshops, competitions, seminars, and hackathons run by IEEE CS.</p>
+    <div className="relative">
+      <PageHero
+        compact
+        eyebrow="What's On"
+        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Events' }]}
+        title="Events & Workshops"
+        subtitle="Workshops, competitions, seminars and hackathons run by IEEE CS — learn something new, build something real, meet your people."
+        meta={[
+          { value: `${upcomingCount}`, label: 'Upcoming' },
+          { value: `${events.length}`, label: 'Total This Year' },
+        ]}
+      />
 
-      <div className="mt-6 flex flex-wrap gap-2">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`relative rounded-full px-4 py-2 text-sm font-semibold transition ${
-              tab === t.key ? 'text-white' : 'bg-white text-slate-600 border border-slate-200 hover:border-ieee-orange'
-            }`}
-          >
-            {tab === t.key && (
-              <motion.span layoutId="event-tab-bg" className="absolute inset-0 rounded-full bg-ieee-orange" transition={{ duration: 0.25 }} />
-            )}
-            <span className="relative">{t.label}</span>
-          </button>
-        ))}
-      </div>
+      <PageSection tone="cream" top>
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTab(t.key)}
+              data-cursor="link"
+              className={`relative rounded-full px-4 py-2 text-sm font-semibold transition ${
+                tab === t.key
+                  ? 'text-white'
+                  : 'border border-black/10 bg-white text-slate-600 hover:border-ieee-orange/50 hover:text-ieee-orange'
+              }`}
+            >
+              {tab === t.key && (
+                <motion.span
+                  layoutId="event-tab-bg"
+                  className="absolute inset-0 rounded-full bg-ieee-orange shadow-[0_6px_20px_rgba(255,108,12,0.3)]"
+                  transition={{ duration: 0.25 }}
+                />
+              )}
+              <span className="relative">{t.label}</span>
+            </button>
+          ))}
+        </div>
 
-      <div className="mt-8">
-        {filtered.length === 0 ? (
-          <EmptyState title="No events in this category" description="Check back soon for updates." />
-        ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((event, idx) => (
-              <motion.div
-                key={event.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: idx * 0.05 }}
-              >
-                <EventCard event={event} />
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </div>
+        <div className="mt-8">
+          {filtered.length === 0 ? (
+            <EmptyState title="No events in this category" description="Check back soon for updates." />
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((event, idx) => (
+                <motion.div
+                  key={event.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: idx * 0.05 }}
+                >
+                  <EventCard event={event} />
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
+      </PageSection>
     </div>
   );
 }
