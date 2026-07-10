@@ -1,6 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Users, PencilLine } from 'lucide-react';
 import { courses } from '@/data/courses';
+import PageHero from '@/components/layout/PageHero';
+import PageSection from '@/components/layout/PageSection';
+import Magnetic from '@/components/effects/Magnetic';
 import SearchBar from '@/components/ui/SearchBar';
 import FilterPanel, { type FilterGroup } from '@/components/ui/FilterPanel';
 import CourseCard from '@/components/cards/CourseCard';
@@ -30,38 +34,61 @@ export default function CoursesPage() {
   }, [query, filters]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6">
-      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Courses</h1>
-          <p className="mt-1 text-slate-600">Browse course outlines, syllabus, and resources.</p>
-        </div>
-        <div className="flex gap-3">
-          <Link to="/courses/teachers" className="rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:border-ieee-orange hover:text-ieee-orange">
-            Teacher Directory
+    <div className="relative">
+      <PageHero
+        compact
+        eyebrow="Academics"
+        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Courses' }]}
+        title="Course Resources"
+        subtitle="Course outlines, weekly syllabus, CDFs, lab manuals and study tips — everything you need to get ahead, in one place."
+        meta={[
+          { value: `${courses.length}`, label: 'Courses' },
+          { value: `${courses.reduce((s, c) => s + c.syllabus.length, 0)}`, label: 'Weeks Mapped' },
+        ]}
+      >
+        <Magnetic>
+          <Link
+            to="/courses/teachers"
+            data-cursor="link"
+            className="flex items-center gap-2 rounded-xl bg-ieee-orange px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(255,108,12,0.32)] transition hover:bg-ieee-orange-dark"
+          >
+            <Users className="h-4 w-4" /> Teacher Directory
           </Link>
-          <Link to="/courses/suggest-correction" className="rounded-lg bg-ieee-orange px-4 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark">
-            Suggest Correction
+        </Magnetic>
+        <Magnetic>
+          <Link
+            to="/courses/suggest-correction"
+            data-cursor="link"
+            className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 backdrop-blur transition hover:border-ieee-orange/50 hover:text-ieee-orange"
+          >
+            <PencilLine className="h-4 w-4" /> Suggest Correction
           </Link>
-        </div>
-      </div>
+        </Magnetic>
+      </PageHero>
 
-      <div className="mt-8">
+      <PageSection tone="cream" top>
         <SearchBar placeholder="Search by course code or name..." onSearch={setQuery} size="lg" />
-      </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
-        <FilterPanel groups={filterGroups} activeFilters={filters} onChange={(k, v) => setFilters((f) => ({ ...f, [k]: v }))} onReset={() => setFilters({})} />
-        {filtered.length === 0 ? (
-          <EmptyState title="No courses found" description="Try a different search term." />
-        ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {filtered.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <FilterPanel
+              groups={filterGroups}
+              activeFilters={filters}
+              onChange={(k, v) => setFilters((f) => ({ ...f, [k]: v }))}
+              onReset={() => setFilters({})}
+            />
           </div>
-        )}
-      </div>
+          {filtered.length === 0 ? (
+            <EmptyState title="No courses found" description="Try a different search term." />
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {filtered.map((course) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+            </div>
+          )}
+        </div>
+      </PageSection>
     </div>
   );
 }

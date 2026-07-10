@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import PageHero from '@/components/layout/PageHero';
+import PageSection from '@/components/layout/PageSection';
 import FormShell from '@/components/ui/FormShell';
 import { FormField, TextInput, TextArea, Select } from '@/components/ui/FormField';
 import SuccessState from '@/components/ui/SuccessState';
@@ -25,55 +27,72 @@ export default function SuggestCorrectionPage() {
     setSubmitted(true);
   };
 
-  if (submitted) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-14">
-        <SuccessState
-          title="Correction submitted!"
-          description="Thanks for helping keep our course data accurate. Our team will review this shortly."
-          action={
-            <Link to="/courses" className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark">
-              Back to Courses
-            </Link>
-          }
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="px-4 py-14 sm:px-6">
-      <FormShell
+    <div className="relative">
+      <PageHero
+        compact
+        eyebrow="Keep it accurate"
+        breadcrumb={[
+          { label: 'Home', to: '/' },
+          { label: 'Courses', to: '/courses' },
+          { label: 'Suggest Correction' },
+        ]}
         title="Suggest a Course Correction"
-        description="Spotted outdated or incorrect course information? Let us know."
-        onSubmit={handleSubmit}
-        submitLabel="Submit Correction"
-      >
-        <FormField label="Your Name (optional)">
-          <TextInput placeholder="Anonymous" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-        </FormField>
-        <FormField label="Course" required>
-          <Select value={form.course} onChange={(e) => setForm({ ...form, course: e.target.value })}>
-            {courses.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.code} — {c.name}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-        <FormField label="Field to Correct" required>
-          <Select value={form.field} onChange={(e) => setForm({ ...form, field: e.target.value })}>
-            <option>Syllabus</option>
-            <option>CDF Link</option>
-            <option>Lab Manual Link</option>
-            <option>Instructor Info</option>
-            <option>Other</option>
-          </Select>
-        </FormField>
-        <FormField label="Correction Details" required>
-          <TextArea required value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} placeholder="Describe what needs to be corrected..." />
-        </FormField>
-      </FormShell>
+        subtitle="Spotted outdated or incorrect course information? Flag it and our team will review and update it."
+      />
+
+      <PageSection tone="cream" top>
+        {submitted ? (
+          <SuccessState
+            title="Correction submitted!"
+            description="Thanks for helping keep our course data accurate. Our team will review this shortly."
+            action={
+              <Link
+                to="/courses"
+                className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark"
+              >
+                Back to Courses
+              </Link>
+            }
+          />
+        ) : (
+          <FormShell onSubmit={handleSubmit} submitLabel="Submit Correction">
+            <FormField label="Your Name (optional)">
+              <TextInput
+                placeholder="Anonymous"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </FormField>
+            <FormField label="Course" required>
+              <Select value={form.course} onChange={(e) => setForm({ ...form, course: e.target.value })}>
+                {courses.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.code} — {c.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+            <FormField label="Field to Correct" required>
+              <Select value={form.field} onChange={(e) => setForm({ ...form, field: e.target.value })}>
+                <option>Syllabus</option>
+                <option>CDF Link</option>
+                <option>Lab Manual Link</option>
+                <option>Instructor Info</option>
+                <option>Other</option>
+              </Select>
+            </FormField>
+            <FormField label="Correction Details" required>
+              <TextArea
+                required
+                value={form.details}
+                onChange={(e) => setForm({ ...form, details: e.target.value })}
+                placeholder="Describe what needs to be corrected..."
+              />
+            </FormField>
+          </FormShell>
+        )}
+      </PageSection>
     </div>
   );
 }
