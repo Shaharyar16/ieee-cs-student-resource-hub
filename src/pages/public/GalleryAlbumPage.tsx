@@ -1,8 +1,14 @@
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import { galleryAlbums } from '@/data/gallery';
+import PageHero from '@/components/layout/PageHero';
+import PageSection from '@/components/layout/PageSection';
 import EmptyState from '@/components/ui/EmptyState';
-import Icon from '@/components/ui/Icon';
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
 
 export default function GalleryAlbumPage() {
   const { id } = useParams();
@@ -10,36 +16,73 @@ export default function GalleryAlbumPage() {
 
   if (!album) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-14">
-        <EmptyState title="Album not found" />
+      <div className="relative">
+        <PageHero
+          compact
+          eyebrow="Gallery"
+          breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Gallery', to: '/gallery' }, { label: 'Not found' }]}
+          title="Album not found"
+          subtitle="This album may have been removed or the link is incorrect."
+        />
+        <PageSection tone="cream" top>
+          <EmptyState
+            title="Nothing here"
+            action={
+              <Link to="/gallery" className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark">
+                Back to Gallery
+              </Link>
+            }
+          />
+        </PageSection>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-      <Link to="/gallery" className="inline-flex items-center gap-1.5 text-sm font-medium text-ieee-blue hover:underline">
-        <Icon name="arrow-left" className="h-4 w-4" /> All Albums
-      </Link>
-      <h1 className="mt-3 text-3xl font-bold text-slate-900">{album.title}</h1>
-      <p className="mt-1 text-sm text-slate-400">{album.date}</p>
-      <p className="mt-3 text-slate-600">{album.description}</p>
+    <div className="relative">
+      <PageHero
+        compact
+        eyebrow="Album"
+        breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Gallery', to: '/gallery' }, { label: album.title }]}
+        title={album.title}
+        subtitle={album.description}
+        meta={[
+          { value: `${album.images.length}`, label: 'Photos' },
+          { value: formatDate(album.date), label: 'Date' },
+        ]}
+      />
 
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {album.images.map((img, idx) => (
-          <motion.div
-            key={img.id}
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.3, delay: idx * 0.05 }}
-            className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-          >
-            <img src={img.url} alt={img.caption} className="h-52 w-full object-cover" />
-            <p className="p-3 text-sm text-slate-600">{img.caption}</p>
-          </motion.div>
-        ))}
-      </div>
+      <PageSection tone="cream" top>
+        <Link
+          to="/gallery"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition hover:text-ieee-orange"
+        >
+          <ArrowLeft className="h-4 w-4" /> All albums
+        </Link>
+
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {album.images.map((img, idx) => (
+            <motion.figure
+              key={img.id}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.35, delay: (idx % 3) * 0.06 }}
+              className="group overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm"
+            >
+              <div className="overflow-hidden">
+                <img
+                  src={img.url}
+                  alt={img.caption}
+                  loading="lazy"
+                  className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+                />
+              </div>
+              <figcaption className="p-4 text-sm text-slate-600">{img.caption}</figcaption>
+            </motion.figure>
+          ))}
+        </div>
+      </PageSection>
     </div>
   );
 }
