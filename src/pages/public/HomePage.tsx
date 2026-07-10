@@ -1,0 +1,72 @@
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import HeroSection from '@/components/layout/HeroSection';
+import QuickLinkGrid from '@/components/layout/QuickLinkGrid';
+import EventsShowcase from '@/components/home/EventsShowcase';
+import ProjectShowcase from '@/components/home/ProjectShowcase';
+import HierarchyOrbit from '@/components/home/HierarchyOrbit';
+import AnimatedBackground from '@/components/effects/AnimatedBackground';
+import CursorField from '@/components/effects/CursorField';
+import ScrollProgress from '@/components/effects/ScrollProgress';
+import CurvedScrollBar from '@/components/effects/CurvedScrollBar';
+import Magnetic from '@/components/effects/Magnetic';
+import { events } from '@/data/events';
+import { projects } from '@/data/projects';
+
+export default function HomePage() {
+  const upcoming = useMemo(() => events.filter((e) => e.timing === 'upcoming').slice(0, 5), []);
+
+  return (
+    <div className="cursor-none-fine relative">
+      <AnimatedBackground />
+      <CursorField />
+      <ScrollProgress />
+      <CurvedScrollBar />
+
+      <HeroSection />
+      <HierarchyOrbit />
+      <QuickLinkGrid />
+      <EventsShowcase events={upcoming} />
+      <ProjectShowcase projects={projects} />
+
+      <motion.section
+        id="about-cta"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6 }}
+        className="mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-12"
+      >
+        <div className="relative overflow-hidden rounded-3xl border border-black/5 bg-white p-10 shadow-sm sm:p-14">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-ieee-orange/10 blur-[100px]" />
+          <div className="relative flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+            <div>
+              <span className="font-mono text-xs font-medium uppercase tracking-widest text-ieee-orange">
+                Who We Are
+              </span>
+              <h3 className="mt-3 max-w-xl font-display text-2xl font-bold text-slate-900 sm:text-3xl">
+                IEEE Computer Society — Student Branch Chapter
+              </h3>
+              <p className="mt-3 max-w-xl text-slate-600">
+                The world&apos;s leading membership organization for computing professionals, brought
+                to campus. We run the mentorship, events, and technical resources behind everything on
+                this hub.
+              </p>
+            </div>
+            <Magnetic className="shrink-0">
+              <Link
+                to="/about"
+                data-cursor="link"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-ieee-ink px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-black"
+              >
+                Learn More <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Magnetic>
+          </div>
+        </div>
+      </motion.section>
+    </div>
+  );
+}

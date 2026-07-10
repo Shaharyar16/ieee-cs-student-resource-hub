@@ -1,0 +1,56 @@
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import type { EventItem } from '@/types';
+import Icon from '@/components/ui/Icon';
+
+interface EventCardProps {
+  event: EventItem;
+}
+
+const categoryColors: Record<EventItem['category'], string> = {
+  workshop: 'bg-blue-100 text-blue-700',
+  competition: 'bg-purple-100 text-purple-700',
+  seminar: 'bg-teal-100 text-teal-700',
+  hackathon: 'bg-orange-100 text-orange-700',
+};
+
+export default function EventCard({ event }: EventCardProps) {
+  const seatsLeft = event.capacity - event.registered;
+  return (
+    <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }} className="h-full">
+      <Link
+        to={`/events/${event.id}`}
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
+      >
+        <div className="relative h-40 w-full overflow-hidden">
+          <img src={event.image} alt={event.title} className="h-full w-full object-cover" />
+          <span className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${categoryColors[event.category]}`}>
+            {event.category}
+          </span>
+          {event.featured && (
+            <span className="absolute right-3 top-3 rounded-full bg-ieee-yellow px-2.5 py-1 text-xs font-semibold text-ieee-black">
+              Featured
+            </span>
+          )}
+        </div>
+        <div className="flex flex-1 flex-col p-4">
+          <h3 className="font-semibold text-slate-900">{event.title}</h3>
+          <p className="mt-1 line-clamp-2 text-sm text-slate-500">{event.description}</p>
+          <div className="mt-3 flex flex-col gap-1 text-xs text-slate-500">
+            <span className="flex items-center gap-1.5">
+              <Icon name="calendar" className="h-3.5 w-3.5 shrink-0" /> {event.date} &middot; {event.time}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Icon name="pin" className="h-3.5 w-3.5 shrink-0" /> {event.venue}
+            </span>
+          </div>
+          {event.timing === 'upcoming' && (
+            <div className="mt-3 text-xs font-medium text-ieee-blue">
+              {event.registrationOpen ? `${seatsLeft} seats left` : 'Registration closed'}
+            </div>
+          )}
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
