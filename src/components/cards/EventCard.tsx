@@ -15,7 +15,6 @@ const categoryColors: Record<EventItem['category'], string> = {
 };
 
 export default function EventCard({ event }: EventCardProps) {
-  const seatsLeft = event.capacity - event.registered;
   return (
     <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }} className="h-full">
       <Link
@@ -45,8 +44,8 @@ export default function EventCard({ event }: EventCardProps) {
             </span>
           </div>
           {event.timing === 'upcoming' && (
-            <div className="mt-3 text-xs font-medium text-ieee-blue">
-              {event.registrationOpen ? `${seatsLeft} seats left` : 'Registration closed'}
+            <div className={`mt-3 text-xs font-semibold ${event.registrationOpen ? 'text-ieee-orange' : 'text-slate-400'}`}>
+              {event.registrationOpen ? 'Registration open' : 'Registration closed'}
             </div>
           )}
         </div>

@@ -33,6 +33,9 @@ import FaqContactPage from '@/pages/public/FaqContactPage';
 import SearchPage from '@/pages/public/SearchPage';
 import PrivacyDisclaimerPage from '@/pages/public/PrivacyDisclaimerPage';
 import DevelopersPage from '@/pages/public/DevelopersPage';
+import FormsPage from '@/pages/public/FormsPage';
+import FormFillPage from '@/pages/public/FormFillPage';
+import DateSheetsPage from '@/pages/public/DateSheetsPage';
 import NotFoundPage from '@/pages/public/NotFoundPage';
 
 import LoginPage from '@/pages/auth/LoginPage';
@@ -55,6 +58,10 @@ import AdminFaqPage from '@/pages/admin/AdminFaqPage';
 import AdminUsersPage from '@/pages/admin/AdminUsersPage';
 import AdminSettingsPage from '@/pages/admin/AdminSettingsPage';
 import AdminDevelopersPage from '@/pages/admin/AdminDevelopersPage';
+import AdminFormsPage from '@/pages/admin/AdminFormsPage';
+import FormBuilderPage from '@/pages/admin/FormBuilderPage';
+import FormResponsesPage from '@/pages/admin/FormResponsesPage';
+import AdminDateSheetsPage from '@/pages/admin/AdminDateSheetsPage';
 
 export const router = createBrowserRouter([
   {
@@ -91,6 +98,9 @@ export const router = createBrowserRouter([
       { path: 'search', element: <SearchPage /> },
       { path: 'privacy-disclaimer', element: <PrivacyDisclaimerPage /> },
       { path: 'developers', element: <DevelopersPage /> },
+      { path: 'forms', element: <FormsPage /> },
+      { path: 'forms/:id', element: <FormFillPage /> },
+      { path: 'date-sheets', element: <DateSheetsPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
@@ -128,6 +138,11 @@ export const router = createBrowserRouter([
       { path: 'announcements', element: <AdminAnnouncementsPage /> },
       { path: 'gallery', element: <AdminGalleryPage /> },
       { path: 'faq', element: <AdminFaqPage /> },
+      { path: 'forms', element: <AdminFormsPage /> },
+      { path: 'forms/new', element: <FormBuilderPage /> },
+      { path: 'forms/:id/edit', element: <FormBuilderPage /> },
+      { path: 'forms/:id/responses', element: <FormResponsesPage /> },
+      { path: 'date-sheets', element: <AdminDateSheetsPage /> },
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'developers', element: <AdminDevelopersPage /> },
       { path: 'settings', element: <AdminSettingsPage /> },

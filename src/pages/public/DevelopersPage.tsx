@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion';
-import { developers } from '@/data/developers';
+import { developers as developersSeed } from '@/data/developers';
+import { useCollection } from '@/hooks/useCollection';
+import type { Developer } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import DeveloperCard from '@/components/cards/DeveloperCard';
 
 export default function DevelopersPage() {
+  const { items: developers } = useCollection<Developer>('developers', developersSeed);
   return (
     <div className="relative">
       <PageHero

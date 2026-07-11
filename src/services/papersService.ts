@@ -1,18 +1,19 @@
 import type { Paper } from '@/types';
 import { papers as seedPapers } from '@/data/papers';
-import { readJSON, writeJSON, makeId } from '@/utils/storage';
+import { readCollection, writeCollection } from '@/services/store';
+import { makeId } from '@/utils/storage';
 
 /**
- * Past papers = seeded archive + student contributions persisted in
- * localStorage. Async + API-shaped so it swaps to a real backend later without
- * touching the pages. Contributed papers appear first (newest) and carry the
- * contributor's name so it can be shown on the paper.
+ * Past papers live in the shared "papers" collection so the admin panel, the
+ * public archive, and student contributions all read/write the same source.
+ * Admin edits + verification are instantly reflected on the site. Async +
+ * API-shaped for an easy backend swap later.
  */
 
-const KEY = 'ieeecs_contributed_papers';
-const delay = (ms = 200) => new Promise((r) => setTimeout(r, ms));
+const KEY = 'papers';
+const delay = (ms = 150) => new Promise((r) => setTimeout(r, ms));
 
-const contributed = (): Paper[] => readJSON<Paper[]>(KEY, []);
+const all = (): Paper[] => readCollection<Paper>(KEY, seedPapers);
 
 export interface ContributePaperInput {
   courseId: string;
@@ -24,19 +25,21 @@ export interface ContributePaperInput {
   instructor: string;
   contributorName: string;
   tags: string[];
+  fileUrl?: string;
 }
 
 export const papersService = {
   async list(): Promise<Paper[]> {
     await delay();
-    return [...contributed(), ...seedPapers];
+    return all();
   },
 
   async get(id: string): Promise<Paper | null> {
     await delay();
-    return [...contributed(), ...seedPapers].find((p) => p.id === id) ?? null;
+    return all().find((p) => p.id === id) ?? null;
   },
 
+  /** Student contribution — enters as pending for the admin verification queue. */
   async contribute(input: ContributePaperInput): Promise<Paper> {
     await delay();
     const paper: Paper = {
@@ -48,14 +51,14 @@ export const papersService = {
       year: input.year,
       examType: input.examType,
       instructor: input.instructor.trim() || 'Not specified',
-      fileUrl: '#',
+      fileUrl: input.fileUrl || '#',
       uploadedBy: input.contributorName.trim() || 'Anonymous',
       uploadedDate: new Date().toISOString().slice(0, 10),
       verification: 'pending',
       tags: input.tags,
       downloads: 0,
     };
-    writeJSON(KEY, [paper, ...contributed()]);
+    writeCollection(KEY, [paper, ...all()]);
     return paper;
   },
 };

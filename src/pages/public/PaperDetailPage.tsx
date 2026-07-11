@@ -1,51 +1,29 @@
-import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Download, FileText, FlagTriangleRight, BookOpen } from 'lucide-react';
+import { Download, FileText, FlagTriangleRight, BookOpen, ShieldCheck } from 'lucide-react';
 import type { Paper } from '@/types';
-import { papersService } from '@/services/papersService';
+import { papers as seedPapers } from '@/data/papers';
+import { useCollection } from '@/hooks/useCollection';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import SectionHeading from '@/components/layout/SectionHeading';
 import VerificationBadge from '@/components/ui/VerificationBadge';
+import DownloadButton, { hasFile } from '@/components/ui/DownloadButton';
 import PaperCard from '@/components/cards/PaperCard';
 import EmptyState from '@/components/ui/EmptyState';
-import Avatar from '@/components/ui/Avatar';
 import Magnetic from '@/components/effects/Magnetic';
+
+function isPdf(url: string) {
+  return url.startsWith('data:application/pdf') || /\.pdf$/i.test(url);
+}
+function isImg(url: string) {
+  return url.startsWith('data:image') || /\.(png|jpe?g|webp|gif)$/i.test(url);
+}
 
 export default function PaperDetailPage() {
   const { id } = useParams();
-  const [paper, setPaper] = useState<Paper | null>(null);
-  const [related, setRelated] = useState<Paper[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let alive = true;
-    setLoading(true);
-    (async () => {
-      const [found, all] = await Promise.all([papersService.get(id ?? ''), papersService.list()]);
-      if (!alive) return;
-      setPaper(found);
-      if (found) {
-        setRelated(all.filter((p) => p.courseId === found.courseId && p.id !== found.id).slice(0, 3));
-      }
-      setLoading(false);
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [id]);
-
-  if (loading) {
-    return (
-      <div className="relative">
-        <PageHero compact eyebrow="Resources" title="Loading…" breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Past Papers', to: '/past-papers' }, { label: '…' }]} />
-        <PageSection tone="cream" top>
-          <div className="h-96 animate-pulse rounded-3xl border border-black/5 bg-white" />
-        </PageSection>
-      </div>
-    );
-  }
+  const { items: papers, update } = useCollection<Paper>('papers', seedPapers);
+  const paper = papers.find((p) => p.id === id);
 
   if (!paper) {
     return (
@@ -71,6 +49,9 @@ export default function PaperDetailPage() {
       </div>
     );
   }
+
+  const related = papers.filter((p) => p.courseId === paper.courseId && p.id !== paper.id).slice(0, 3);
+  const fileReady = hasFile(paper.fileUrl);
 
   const details = [
     { label: 'Term', value: `${paper.term} ${paper.year}` },
@@ -101,28 +82,38 @@ export default function PaperDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex aspect-[4/5] items-center justify-center rounded-3xl border border-black/5 bg-white shadow-[0_8px_30px_rgba(10,10,12,0.08)]"
+            className="aspect-[4/5] overflow-hidden rounded-3xl border border-black/5 bg-white shadow-[0_8px_30px_rgba(10,10,12,0.08)]"
           >
-            <div className="text-center text-slate-400">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-ieee-orange/10 text-ieee-orange">
-                <FileText className="h-8 w-8" strokeWidth={1.5} />
+            {fileReady && isPdf(paper.fileUrl) ? (
+              <iframe title={paper.title} src={paper.fileUrl} className="h-full w-full" />
+            ) : fileReady && isImg(paper.fileUrl) ? (
+              <img src={paper.fileUrl} alt={paper.title} className="h-full w-full object-contain" />
+            ) : (
+              <div className="flex h-full items-center justify-center text-center text-slate-400">
+                <div>
+                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-ieee-orange/10 text-ieee-orange">
+                    <FileText className="h-8 w-8" strokeWidth={1.5} />
+                  </div>
+                  <p className="mt-3 text-sm">No file uploaded yet</p>
+                </div>
               </div>
-              <p className="mt-3 text-sm">PDF / image preview</p>
-            </div>
+            )}
           </motion.div>
 
           {/* meta */}
           <div>
             <VerificationBadge status={paper.verification} />
 
-            {/* contributor credit */}
-            <div className="mt-5 flex items-center gap-3 rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
-              <Avatar name={paper.uploadedBy} size="md" />
-              <div>
-                <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Contributed by</p>
-                <p className="text-sm font-semibold text-slate-800">{paper.uploadedBy}</p>
+            {/* verified-by credit */}
+            {paper.verification === 'verified' && (
+              <div className="mt-5 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-emerald-600">Verified by</p>
+                  <p className="text-sm font-bold text-emerald-800">IEEE CS</p>
+                </div>
               </div>
-            </div>
+            )}
 
             {paper.tags.length > 0 && (
               <div className="mt-5 flex flex-wrap gap-1.5">
@@ -145,20 +136,21 @@ export default function PaperDetailPage() {
 
             <div className="mt-6 flex flex-col gap-3">
               <Magnetic>
-                <a
-                  href={paper.fileUrl}
-                  data-cursor="link"
+                <DownloadButton
+                  url={paper.fileUrl}
+                  filename={`${paper.courseName}-${paper.examType}-${paper.year}`}
+                  label="Download Paper"
+                  icon={<Download className="h-4 w-4" />}
+                  onClick={() => update(paper.id, { downloads: paper.downloads + 1 })}
                   className="flex items-center justify-center gap-2 rounded-xl bg-ieee-orange px-5 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(255,108,12,0.3)] transition hover:bg-ieee-orange-dark"
-                >
-                  <Download className="h-4 w-4" /> Download Paper
-                </a>
+                />
               </Magnetic>
               <Link
                 to={`/courses/${paper.courseId}`}
                 data-cursor="link"
                 className="flex items-center justify-center gap-2 rounded-xl border border-black/10 bg-white px-5 py-3.5 text-sm font-semibold text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
               >
-                <BookOpen className="h-4 w-4" /> View Related Course
+                <BookOpen className="h-4 w-4" /> View Course
               </Link>
               <Link
                 to="/faq-contact"

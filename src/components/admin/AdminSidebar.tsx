@@ -1,4 +1,6 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowUpRight } from 'lucide-react';
 import Icon, { type IconName } from '@/components/ui/Icon';
 
 const navGroups: { title: string; items: { label: string; to: string; icon: IconName }[] }[] = [
@@ -13,12 +15,14 @@ const navGroups: { title: string; items: { label: string; to: string; icon: Icon
       { label: 'Banners', to: '/portal/banners', icon: 'image' },
       { label: 'Past Papers', to: '/portal/papers', icon: 'file' },
       { label: 'Courses', to: '/portal/courses', icon: 'book' },
+      { label: 'Date Sheets', to: '/portal/date-sheets', icon: 'calendar' },
       { label: 'Projects', to: '/portal/projects', icon: 'layers' },
       { label: 'Navigation', to: '/portal/navigation', icon: 'compass' },
       { label: 'Hierarchy', to: '/portal/hierarchy', icon: 'building' },
       { label: 'Quick Links', to: '/portal/quick-links', icon: 'link' },
       { label: 'Announcements', to: '/portal/announcements', icon: 'megaphone' },
       { label: 'Gallery', to: '/portal/gallery', icon: 'image' },
+      { label: 'Forms', to: '/portal/forms', icon: 'inbox' },
       { label: 'FAQ', to: '/portal/faq', icon: 'question' },
       { label: 'Developers', to: '/portal/developers', icon: 'users' },
     ],
@@ -35,17 +39,21 @@ const navGroups: { title: string; items: { label: string; to: string; icon: Icon
 
 export default function AdminSidebar() {
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
-      <div className="flex items-center gap-2 border-b border-slate-200 px-5 py-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ieee-navy text-sm font-bold text-white">
+    <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-white/5 bg-ieee-ink lg:flex">
+      <div className="flex items-center gap-2.5 border-b border-white/5 px-5 py-4">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ieee-orange text-sm font-bold text-white shadow-[0_4px_14px_rgba(255,108,12,0.4)]">
           CS
         </span>
-        <span className="text-sm font-bold text-slate-900">Admin Panel</span>
+        <div className="leading-tight">
+          <p className="font-display text-sm font-bold text-white">Team Portal</p>
+          <p className="font-mono text-[10px] uppercase tracking-widest text-white/30">IEEE CS Admin</p>
+        </div>
       </div>
+
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         {navGroups.map((group) => (
           <div key={group.title} className="mb-5">
-            <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+            <p className="mb-1.5 px-2 font-mono text-[10px] font-semibold uppercase tracking-widest text-white/25">
               {group.title}
             </p>
             <div className="flex flex-col gap-0.5">
@@ -54,19 +62,38 @@ export default function AdminSidebar() {
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors ${
-                      isActive ? 'bg-ieee-orange/10 text-ieee-orange' : 'text-slate-600 hover:bg-slate-100'
+                    `group relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                      isActive ? 'text-ieee-orange' : 'text-white/55 hover:bg-white/5 hover:text-white'
                     }`
                   }
                 >
-                  <Icon name={item.icon} className="h-4 w-4" />
-                  {item.label}
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <motion.span
+                          layoutId="admin-nav-active"
+                          className="absolute inset-0 rounded-xl bg-ieee-orange/15"
+                          transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                        />
+                      )}
+                      <Icon name={item.icon} className="relative h-4 w-4" />
+                      <span className="relative">{item.label}</span>
+                    </>
+                  )}
                 </NavLink>
               ))}
             </div>
           </div>
         ))}
       </nav>
+
+      <Link
+        to="/"
+        className="flex items-center justify-between border-t border-white/5 px-5 py-4 text-xs font-medium text-white/40 transition hover:text-ieee-orange"
+      >
+        View live site
+        <ArrowUpRight className="h-3.5 w-3.5" />
+      </Link>
     </aside>
   );
 }

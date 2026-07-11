@@ -6,12 +6,14 @@ import FormShell from '@/components/ui/FormShell';
 import { FormField, TextInput, Select } from '@/components/ui/FormField';
 import SuccessState from '@/components/ui/SuccessState';
 import EmptyState from '@/components/ui/EmptyState';
-import { events } from '@/data/events';
+import { events as seedEvents } from '@/data/events';
+import { useCollection } from '@/hooks/useCollection';
 import { appendToStorage, makeId } from '@/utils/storage';
-import type { Submission } from '@/types';
+import type { EventItem, Submission } from '@/types';
 
 export default function EventRegisterPage() {
   const { id } = useParams();
+  const { items: events } = useCollection<EventItem>('events', seedEvents);
   const event = events.find((e) => e.id === id);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', rollNumber: '', batch: '' });

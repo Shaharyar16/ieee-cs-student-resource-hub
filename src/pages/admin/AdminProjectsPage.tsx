@@ -1,59 +1,64 @@
-import { useState } from 'react';
-import AdminTopbar from '@/components/admin/AdminTopbar';
-import AdminTable, { type AdminTableColumn } from '@/components/admin/AdminTable';
-import VerificationBadge from '@/components/ui/VerificationBadge';
-import ConfirmModal from '@/components/ui/ConfirmModal';
+import AdminResourcePage from '@/components/admin/AdminResourcePage';
+import type { AdminTableColumn } from '@/components/admin/AdminTable';
 import { projects as seedProjects } from '@/data/projects';
 import type { ProjectItem } from '@/types';
 
+const columns: AdminTableColumn<ProjectItem>[] = [
+  { key: 'title', header: 'Title', sortValue: (p) => p.title, render: (p) => <span className="font-medium text-slate-900">{p.title}</span> },
+  { key: 'tagline', header: 'Tagline', render: (p) => <span className="line-clamp-1 max-w-xs text-slate-500">{p.tagline}</span> },
+  { key: 'category', header: 'Category', sortValue: (p) => p.category, render: (p) => p.category },
+  { key: 'year', header: 'Year', sortValue: (p) => p.year, render: (p) => p.year },
+];
+
 export default function AdminProjectsPage() {
-  const [projects, setProjects] = useState<ProjectItem[]>(seedProjects);
-  const [deleting, setDeleting] = useState<ProjectItem | null>(null);
-
-  const setVerification = (id: string, verification: ProjectItem['verification']) => {
-    setProjects((ps) => ps.map((p) => (p.id === id ? { ...p, verification } : p)));
-  };
-
-  const columns: AdminTableColumn<ProjectItem>[] = [
-    { key: 'title', header: 'Title', render: (p) => <span className="font-medium text-slate-900">{p.title}</span> },
-    { key: 'category', header: 'Category', render: (p) => p.category },
-    { key: 'year', header: 'Year', render: (p) => p.year },
-    { key: 'verification', header: 'Verification', render: (p) => <VerificationBadge status={p.verification} size="sm" /> },
-    {
-      key: 'actions',
-      header: '',
-      render: (p) => (
-        <div className="flex flex-wrap gap-2">
-          {p.verification !== 'verified' && (
-            <button onClick={() => setVerification(p.id, 'verified')} className="text-xs font-semibold text-emerald-600 hover:underline">
-              Approve
-            </button>
-          )}
-          <button onClick={() => setDeleting(p)} className="text-xs font-semibold text-rose-600 hover:underline">
-            Delete
-          </button>
-        </div>
-      ),
-    },
-  ];
-
   return (
-    <div>
-      <AdminTopbar title="Projects Expo" />
-      <div className="p-4 sm:p-6">
-        <AdminTable columns={columns} rows={projects} rowKey={(p) => p.id} />
-      </div>
-      <ConfirmModal
-        open={!!deleting}
-        title={`Delete "${deleting?.title}"?`}
-        danger
-        confirmLabel="Delete"
-        onCancel={() => setDeleting(null)}
-        onConfirm={() => {
-          setProjects((ps) => ps.filter((p) => p.id !== deleting?.id));
-          setDeleting(null);
-        }}
-      />
-    </div>
+    <AdminResourcePage<ProjectItem>
+      title="Projects"
+      subtitle="Student-submitted projects — review and remove if needed"
+      addLabel=""
+      collectionKey="projectsExpo"
+      addable={false}
+      editable={false}
+      seed={seedProjects}
+      rowKey={(p) => p.id}
+      columns={columns}
+      searchable={(p) => `${p.title} ${p.tagline} ${p.category} ${p.techStack.join(' ')}`}
+      emptyItem={() => seedProjects[0]}
+      renderForm={() => null}
+      renderView={(p) => (
+        <div className="flex flex-col gap-4">
+          {p.screenshots.length > 0 && (
+            <div className="grid grid-cols-2 gap-2">
+              {p.screenshots.map((s) => (
+                <img key={s} src={s} alt={p.title} className="h-28 w-full rounded-xl border border-black/5 object-cover" />
+              ))}
+            </div>
+          )}
+          <div>
+            <h3 className="font-display text-lg font-bold text-slate-900">{p.title}</h3>
+            <p className="text-sm text-slate-500">{p.tagline}</p>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {p.techStack.map((t) => (
+              <span key={t} className="rounded-full bg-ieee-orange/10 px-2.5 py-1 font-mono text-[11px] text-ieee-orange">
+                {t}
+              </span>
+            ))}
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Problem</p>
+            <p className="mt-1 text-sm text-slate-600">{p.problem}</p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Solution</p>
+            <p className="mt-1 text-sm text-slate-600">{p.solution}</p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Team</p>
+            <p className="mt-1 text-sm text-slate-600">{p.team.map((m) => `${m.name} (${m.role})`).join(', ')}</p>
+          </div>
+        </div>
+      )}
+    />
   );
 }

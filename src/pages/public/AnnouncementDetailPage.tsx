@@ -1,6 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
-import { announcements } from '@/data/announcements';
+import { announcements as announcementsSeed } from '@/data/announcements';
+import { useCollection } from '@/hooks/useCollection';
+import type { Announcement } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import EmptyState from '@/components/ui/EmptyState';
@@ -11,6 +13,7 @@ function formatDate(iso: string) {
 
 export default function AnnouncementDetailPage() {
   const { id } = useParams();
+  const { items: announcements } = useCollection<Announcement>('announcements', announcementsSeed);
   const announcement = announcements.find((a) => a.id === id);
 
   if (!announcement) {

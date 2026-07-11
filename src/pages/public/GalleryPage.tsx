@@ -1,9 +1,12 @@
-import { galleryAlbums } from '@/data/gallery';
+import { galleryAlbums as gallerySeed } from '@/data/gallery';
+import { useCollection } from '@/hooks/useCollection';
+import type { GalleryAlbum } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import GalleryAlbumCard from '@/components/cards/GalleryAlbumCard';
 
 export default function GalleryPage() {
+  const { items: galleryAlbums } = useCollection<GalleryAlbum>('gallery', gallerySeed);
   const totalPhotos = galleryAlbums.reduce((s, a) => s + a.images.length, 0);
 
   return (

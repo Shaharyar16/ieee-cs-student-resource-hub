@@ -8,20 +8,26 @@ import {
   Lightbulb,
   CheckCircle2,
   PencilLine,
+  GitBranch,
+  ArrowRight,
 } from 'lucide-react';
-import { courses } from '@/data/courses';
+import { courses as coursesSeed } from '@/data/courses';
 import { teachers } from '@/data/teachers';
 import { papers } from '@/data/papers';
+import { useCollection } from '@/hooks/useCollection';
+import type { Course } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import SectionHeading from '@/components/layout/SectionHeading';
 import VerificationBadge from '@/components/ui/VerificationBadge';
+import DownloadButton from '@/components/ui/DownloadButton';
 import PaperCard from '@/components/cards/PaperCard';
 import EmptyState from '@/components/ui/EmptyState';
 import Magnetic from '@/components/effects/Magnetic';
 
 export default function CourseDetailPage() {
   const { id } = useParams();
+  const { items: courses } = useCollection<Course>('courses', coursesSeed);
   const course = courses.find((c) => c.id === id);
 
   if (!course) {
@@ -50,6 +56,10 @@ export default function CourseDetailPage() {
 
   const courseTeachers = teachers.filter((t) => course.teacherIds.includes(t.id));
   const relatedPapers = papers.filter((p) => p.courseId === course.id).slice(0, 3);
+  const prereqCourses = (course.prerequisites ?? [])
+    .map((code) => courses.find((c) => c.code === code))
+    .filter((c): c is Course => !!c);
+  const requiredFor = courses.filter((c) => (c.prerequisites ?? []).includes(course.code));
 
   return (
     <div className="relative">
@@ -60,6 +70,7 @@ export default function CourseDetailPage() {
         title={course.name}
         subtitle={course.description}
         meta={[
+          ...(course.semester ? [{ value: `${course.semester}`, label: 'Semester' }] : []),
           { value: `${course.creditHours}`, label: 'Credit Hours' },
           { value: `${course.syllabus.length}`, label: 'Weeks' },
           { value: `${relatedPapers.length}`, label: 'Past Papers' },
@@ -105,34 +116,80 @@ export default function CourseDetailPage() {
           </div>
         </div>
 
+        {/* Prerequisites & pathway */}
+        <div className="mt-6 rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
+          <div className="flex items-center gap-2 text-ieee-orange">
+            <GitBranch className="h-5 w-5" />
+            <h2 className="font-display text-lg font-bold text-slate-900">Prerequisites &amp; Pathway</h2>
+          </div>
+          <div className="mt-4 grid gap-6 sm:grid-cols-2">
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-slate-400">Prerequisites</p>
+              {prereqCourses.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {prereqCourses.map((c) => (
+                    <Link
+                      key={c.id}
+                      to={`/courses/${c.id}`}
+                      data-cursor="link"
+                      className="flex items-center gap-1.5 rounded-full border border-black/10 bg-cream px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+                    >
+                      <span className="font-mono text-ieee-orange">{c.code}</span> {c.name}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-slate-500">No prerequisites — you can take this anytime.</p>
+              )}
+            </div>
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-widest text-slate-400">Required for</p>
+              {requiredFor.length > 0 ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {requiredFor.map((c) => (
+                    <Link
+                      key={c.id}
+                      to={`/courses/${c.id}`}
+                      data-cursor="link"
+                      className="flex items-center gap-1.5 rounded-full border border-black/10 bg-cream px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+                    >
+                      <span className="font-mono text-ieee-orange">{c.code}</span> {c.name}
+                      <ArrowRight className="h-3 w-3" />
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-sm text-slate-500">Not a prerequisite for any listed course.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Materials + Links */}
         <div className="mt-6 grid gap-6 sm:grid-cols-2">
           <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
             <h3 className="font-display font-bold text-slate-900">Course Materials</h3>
             <div className="mt-4 flex flex-col gap-2.5">
-              {course.cdfUrl && (
-                <a
-                  href={course.cdfUrl}
-                  data-cursor="link"
-                  className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
-                >
-                  <BookOpen className="h-4 w-4 text-ieee-orange" /> Download CDF
-                </a>
-              )}
-              {course.labManualUrl && (
-                <a
-                  href={course.labManualUrl}
-                  data-cursor="link"
-                  className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
-                >
-                  <FlaskConical className="h-4 w-4 text-ieee-orange" /> Download Lab Manual
-                </a>
-              )}
+              <DownloadButton
+                url={course.cdfUrl}
+                filename={`${course.code}-CDF`}
+                label="Download CDF"
+                icon={<BookOpen className="h-4 w-4 text-ieee-orange" />}
+                className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+              />
+              <DownloadButton
+                url={course.labManualUrl}
+                filename={`${course.code}-Lab-Manual`}
+                label="Download Lab Manual"
+                icon={<FlaskConical className="h-4 w-4 text-ieee-orange" />}
+                className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+              />
             </div>
           </div>
           <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
             <h3 className="font-display font-bold text-slate-900">Useful Links</h3>
             <div className="mt-4 flex flex-col gap-2.5">
+              {course.usefulLinks.length === 0 && <p className="text-sm text-slate-500">No links added yet.</p>}
               {course.usefulLinks.map((link) => (
                 <a
                   key={link.url}
@@ -152,7 +209,7 @@ export default function CourseDetailPage() {
 
       {/* Syllabus */}
       <PageSection tone="white">
-        <SectionHeading eyebrow="16-Week Plan" title="Weekly syllabus" flourish />
+        <SectionHeading eyebrow={`${course.syllabus.length}-Week Plan`} title="Weekly syllabus" flourish />
         <div className="mt-10 grid gap-3 sm:grid-cols-2">
           {course.syllabus.map((w, i) => (
             <motion.div

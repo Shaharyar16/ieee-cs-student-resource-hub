@@ -10,14 +10,17 @@ import HierarchyOrbit from '@/components/home/HierarchyOrbit';
 import AnimatedBackground from '@/components/effects/AnimatedBackground';
 import ScrollProgress from '@/components/effects/ScrollProgress';
 import Magnetic from '@/components/effects/Magnetic';
-import { events } from '@/data/events';
+import { events as seedEvents } from '@/data/events';
 import { projects } from '@/data/projects';
+import { useCollection } from '@/hooks/useCollection';
+import type { EventItem } from '@/types';
 
 export default function HomePage() {
+  const { items: events } = useCollection<EventItem>('events', seedEvents);
   const flagship = useMemo(() => {
     const featured = events.filter((e) => e.featured);
     return (featured.length ? featured : events.filter((e) => e.timing === 'upcoming')).slice(0, 6);
-  }, []);
+  }, [events]);
 
   return (
     <div className="relative">

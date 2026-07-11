@@ -6,6 +6,8 @@ export const courses: Course[] = [
     code: 'CS-301',
     name: 'Data Structures & Algorithms',
     creditHours: 4,
+    semester: 3,
+    prerequisites: ['CS-210'],
     department: 'Computer Science',
     description:
       'Covers fundamental data structures, algorithm design paradigms, and complexity analysis with practical implementation exercises.',
@@ -50,6 +52,8 @@ export const courses: Course[] = [
     code: 'CS-405',
     name: 'Database Systems',
     creditHours: 3,
+    semester: 5,
+    prerequisites: ['CS-301'],
     department: 'Computer Science',
     description:
       'Introduces relational database design, SQL, normalization, transactions, and indexing strategies.',
@@ -88,6 +92,8 @@ export const courses: Course[] = [
     code: 'CS-210',
     name: 'Object Oriented Programming',
     creditHours: 4,
+    semester: 2,
+    prerequisites: [],
     department: 'Computer Science',
     description:
       'Covers OOP principles including encapsulation, inheritance, polymorphism, and design patterns using Java.',
@@ -126,6 +132,8 @@ export const courses: Course[] = [
     code: 'CS-450',
     name: 'Operating Systems',
     creditHours: 3,
+    semester: 5,
+    prerequisites: ['CS-301'],
     department: 'Computer Science',
     description:
       'Explores process management, memory management, file systems, and concurrency in modern operating systems.',
@@ -164,6 +172,8 @@ export const courses: Course[] = [
     code: 'CS-360',
     name: 'Computer Networks',
     creditHours: 3,
+    semester: 4,
+    prerequisites: ['CS-210'],
     department: 'Computer Science',
     description:
       'Covers the OSI and TCP/IP models, routing, transport protocols, and network security fundamentals.',
@@ -202,6 +212,8 @@ export const courses: Course[] = [
     code: 'CS-480',
     name: 'Artificial Intelligence',
     creditHours: 3,
+    semester: 7,
+    prerequisites: ['CS-301'],
     department: 'Computer Science',
     description:
       'Introduces search algorithms, knowledge representation, machine learning basics, and intelligent agents.',

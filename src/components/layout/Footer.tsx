@@ -10,8 +10,10 @@ const columns = [
     links: [
       { label: 'Past Papers', to: '/past-papers' },
       { label: 'Courses', to: '/courses' },
+      { label: 'Date Sheets', to: '/date-sheets' },
       { label: 'Events', to: '/events' },
       { label: 'Projects Expo', to: '/projects-expo' },
+      { label: 'Forms', to: '/forms' },
     ],
   },
   {

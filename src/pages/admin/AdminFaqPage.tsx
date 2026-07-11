@@ -1,50 +1,76 @@
-import { useState } from 'react';
-import AdminTopbar from '@/components/admin/AdminTopbar';
-import AdminTable, { type AdminTableColumn } from '@/components/admin/AdminTable';
-import ConfirmModal from '@/components/ui/ConfirmModal';
+import AdminResourcePage from '@/components/admin/AdminResourcePage';
+import type { AdminTableColumn } from '@/components/admin/AdminTable';
+import { AdminField, AdminInput, AdminTextarea, AdminSelect } from '@/components/admin/AdminField';
 import { faqs as seedFaqs } from '@/data/faqs';
+import { makeId } from '@/utils/storage';
 import type { FAQ } from '@/types';
 
+const categories: FAQ['category'][] = [
+  'IEEE CS',
+  'Past Papers',
+  'Courses',
+  'Events',
+  'Navigation',
+  'Projects Expo',
+  'Contributions',
+  'Technical Issues',
+];
+
+const columns: AdminTableColumn<FAQ>[] = [
+  { key: 'question', header: 'Question', sortValue: (f) => f.question, render: (f) => <span className="font-medium text-slate-900">{f.question}</span> },
+  {
+    key: 'category',
+    header: 'Category',
+    sortValue: (f) => f.category,
+    render: (f) => <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600">{f.category}</span>,
+  },
+];
+
 export default function AdminFaqPage() {
-  const [faqs, setFaqs] = useState<FAQ[]>(seedFaqs);
-  const [deleting, setDeleting] = useState<FAQ | null>(null);
-
-  const columns: AdminTableColumn<FAQ>[] = [
-    { key: 'question', header: 'Question', render: (f) => <span className="font-medium text-slate-900">{f.question}</span> },
-    { key: 'category', header: 'Category', render: (f) => f.category },
-    {
-      key: 'actions',
-      header: '',
-      render: (f) => (
-        <button onClick={() => setDeleting(f)} className="text-xs font-semibold text-rose-600 hover:underline">
-          Delete
-        </button>
-      ),
-    },
-  ];
-
   return (
-    <div>
-      <AdminTopbar title="FAQ Management" />
-      <div className="p-4 sm:p-6">
-        <div className="mb-4 flex justify-end">
-          <button className="rounded-lg bg-ieee-orange px-4 py-2 text-sm font-semibold text-white hover:bg-ieee-orange-dark">
-            + New FAQ
-          </button>
+    <AdminResourcePage<FAQ>
+      title="FAQ Management"
+      subtitle="Questions shown on the FAQ & Contact page"
+      addLabel="New FAQ"
+      collectionKey="faqs"
+      seed={seedFaqs}
+      rowKey={(f) => f.id}
+      reorderable
+      columns={columns}
+      searchable={(f) => `${f.question} ${f.answer} ${f.category}`}
+      validate={(f) => !!f.question.trim() && !!f.answer.trim()}
+      emptyItem={() => ({ id: makeId('faq'), question: '', answer: '', category: 'IEEE CS' })}
+      renderView={(f) => (
+        <div className="flex flex-col gap-3">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Question</p>
+            <p className="mt-1 font-semibold text-slate-900">{f.question}</p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Answer</p>
+            <p className="mt-1 text-sm leading-relaxed text-slate-600">{f.answer}</p>
+          </div>
         </div>
-        <AdminTable columns={columns} rows={faqs} rowKey={(f) => f.id} />
-      </div>
-      <ConfirmModal
-        open={!!deleting}
-        title="Delete this FAQ?"
-        danger
-        confirmLabel="Delete"
-        onCancel={() => setDeleting(null)}
-        onConfirm={() => {
-          setFaqs((fs) => fs.filter((f) => f.id !== deleting?.id));
-          setDeleting(null);
-        }}
-      />
-    </div>
+      )}
+      renderForm={(draft, setDraft) => (
+        <div className="flex flex-col gap-4">
+          <AdminField label="Question" required>
+            <AdminInput value={draft.question} onChange={(e) => setDraft({ ...draft, question: e.target.value })} />
+          </AdminField>
+          <AdminField label="Answer" required>
+            <AdminTextarea value={draft.answer} onChange={(e) => setDraft({ ...draft, answer: e.target.value })} />
+          </AdminField>
+          <AdminField label="Category">
+            <AdminSelect value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value as FAQ['category'] })}>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </AdminSelect>
+          </AdminField>
+        </div>
+      )}
+    />
   );
 }

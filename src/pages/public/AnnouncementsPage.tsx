@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Pin, ArrowUpRight } from 'lucide-react';
-import { announcements } from '@/data/announcements';
+import { announcements as announcementsSeed } from '@/data/announcements';
+import { useCollection } from '@/hooks/useCollection';
+import type { Announcement } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 
@@ -18,6 +20,7 @@ function formatDate(iso: string) {
 }
 
 export default function AnnouncementsPage() {
+  const { items: announcements } = useCollection<Announcement>('announcements', announcementsSeed);
   const ordered = [...announcements].sort((a, b) => Number(Boolean(b.pinned)) - Number(Boolean(a.pinned)));
 
   return (

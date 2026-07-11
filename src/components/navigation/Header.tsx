@@ -14,6 +14,7 @@ const navItems = [
   { label: 'Events', to: '/events' },
   { label: 'Navigation', to: '/navigation' },
   { label: 'Projects', to: '/projects-expo' },
+  { label: 'Forms', to: '/forms' },
 ];
 
 export default function Header() {

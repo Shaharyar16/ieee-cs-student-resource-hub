@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import SectionHeading from '@/components/layout/SectionHeading';
-import { hierarchyTerms } from '@/data/hierarchy';
-
-const current = hierarchyTerms[0];
+import { hierarchyTerms as seedTerms } from '@/data/hierarchy';
+import { useStore } from '@/hooks/useCollection';
+import type { HierarchyTerm } from '@/types';
 
 function MemberChip({
   name,
@@ -36,8 +36,10 @@ function MemberChip({
 }
 
 export default function HierarchyPage() {
-  const [selectedTerm, setSelectedTerm] = useState(hierarchyTerms[0].term);
-  const selected = hierarchyTerms.find((t) => t.term === selectedTerm) ?? hierarchyTerms[0];
+  const [terms] = useStore<HierarchyTerm>('hierarchyTerms', seedTerms);
+  const current = terms[0];
+  const [selectedTerm, setSelectedTerm] = useState(seedTerms[0].term);
+  const selected = terms.find((t) => t.term === selectedTerm) ?? terms[0];
 
   const chair = current.members[0];
   const secondTier = current.members.slice(1, 3);
@@ -51,7 +53,7 @@ export default function HierarchyPage() {
         title="Leadership Hierarchy"
         subtitle="The students who lead the IEEE CS Student Branch each semester — and everyone who came before them."
         meta={[
-          { value: String(hierarchyTerms.length), label: 'Councils Archived' },
+          { value: String(terms.length), label: 'Councils Archived' },
           { value: String(current.members.length), label: `Members · ${current.term}` },
         ]}
       />
@@ -93,7 +95,7 @@ export default function HierarchyPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <SectionHeading eyebrow="Council Archive" title="Every term, remembered." />
           <div className="flex flex-wrap gap-2">
-            {hierarchyTerms.map((t) => (
+            {terms.map((t) => (
               <button
                 key={t.term}
                 type="button"

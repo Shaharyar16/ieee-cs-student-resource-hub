@@ -15,7 +15,9 @@ import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import SectionHeading from '@/components/layout/SectionHeading';
 import Magnetic from '@/components/effects/Magnetic';
-import { currentHierarchy } from '@/data/hierarchy';
+import { hierarchyTerms as seedTerms } from '@/data/hierarchy';
+import { useStore } from '@/hooks/useCollection';
+import type { HierarchyTerm } from '@/types';
 
 const pillars = [
   {
@@ -48,6 +50,8 @@ const stats = [
 ];
 
 export default function AboutPage() {
+  const [terms] = useStore<HierarchyTerm>('hierarchyTerms', seedTerms);
+  const currentHierarchy = terms[0];
   return (
     <div className="relative">
       <PageHero

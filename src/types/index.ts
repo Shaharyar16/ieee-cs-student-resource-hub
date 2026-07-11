@@ -49,6 +49,8 @@ export interface EventItem {
   image: string;
   organizers: string[];
   outcome?: EventOutcome;
+  /** Optional custom registration form (built in the Forms module). */
+  registrationFormId?: string;
 }
 
 export interface Paper {
@@ -78,6 +80,8 @@ export interface Course {
   code: string;
   name: string;
   creditHours: number;
+  /** Recommended semester (1-8). */
+  semester?: number;
   department: string;
   description: string;
   outcomes: string[];
@@ -85,9 +89,23 @@ export interface Course {
   cdfUrl?: string;
   labManualUrl?: string;
   teacherIds: string[];
+  /** Course codes this course requires beforehand. */
+  prerequisites?: string[];
   usefulLinks: { label: string; url: string }[];
   tips: string[];
   verification: VerificationStatus;
+}
+
+export interface DateSheet {
+  id: string;
+  title: string;
+  semester: number;
+  /** e.g. "Fall", "Spring". */
+  term: string;
+  year: number;
+  /** Uploaded file (data URL / image / PDF). Empty when not uploaded. */
+  fileUrl: string;
+  uploadedDate: string;
 }
 
 export interface Teacher {
@@ -205,6 +223,69 @@ export interface ProjectPost {
   baseReposts: number;
   repostedBy: string[];
   comments: ProjectComment[];
+}
+
+// --- Forms module (Google-Forms-style builder + responses) ----------------
+
+export type FormFieldType =
+  | 'short-text'
+  | 'long-text'
+  | 'email'
+  | 'number'
+  | 'date'
+  | 'dropdown'
+  | 'radio'
+  | 'checkbox'
+  | 'file'
+  | 'image';
+
+export interface FormFieldOption {
+  id: string;
+  label: string;
+}
+
+export interface FormField {
+  id: string;
+  type: FormFieldType;
+  label: string;
+  description?: string;
+  placeholder?: string;
+  required: boolean;
+  /** For dropdown / radio / checkbox. */
+  options?: FormFieldOption[];
+}
+
+export interface FormPage {
+  id: string;
+  title?: string;
+  description?: string;
+  fields: FormField[];
+}
+
+export interface FormDef {
+  id: string;
+  title: string;
+  description: string;
+  pages: FormPage[];
+  /** open = visible to students; disabled = hidden but kept with its data. */
+  status: 'open' | 'disabled';
+  createdAt: string;
+  /** The seeded feedback form is pinned below admin-created forms. */
+  isDefault?: boolean;
+}
+
+/** A single answer value: text, a choice, multiple choices, or a file marker. */
+export type FormAnswer = string | string[];
+
+export interface FormResponse {
+  id: string;
+  formId: string;
+  submittedBy?: string;
+  submittedAt: string;
+  /** Keyed by field id. */
+  answers: Record<string, FormAnswer>;
+  /** Snapshot of field labels at submit time so responses read correctly even if the form is later edited. */
+  fieldLabels: Record<string, string>;
 }
 
 export interface HierarchyMember {

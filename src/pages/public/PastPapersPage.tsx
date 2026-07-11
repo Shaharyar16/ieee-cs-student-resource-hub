@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileSearch } from 'lucide-react';
-import type { Paper } from '@/types';
-import { papersService } from '@/services/papersService';
-import { courses } from '@/data/courses';
+import type { Paper, Course } from '@/types';
+import { papers as seedPapers } from '@/data/papers';
+import { courses as coursesSeed } from '@/data/courses';
+import { useCollection } from '@/hooks/useCollection';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import Magnetic from '@/components/effects/Magnetic';
@@ -14,27 +15,18 @@ import PaperCard from '@/components/cards/PaperCard';
 import EmptyState from '@/components/ui/EmptyState';
 
 export default function PastPapersPage() {
-  const [papers, setPapers] = useState<Paper[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { items: papers } = useCollection<Paper>('papers', seedPapers);
+  const { items: courses } = useCollection<Course>('courses', coursesSeed);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    let alive = true;
-    papersService.list().then((data) => {
-      if (alive) {
-        setPapers(data);
-        setLoading(false);
-      }
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
-
   const filterGroups: FilterGroup[] = useMemo(
     () => [
-      { label: 'Course', key: 'courseId', options: courses.map((c) => ({ label: c.code, value: c.id })) },
+      {
+        label: 'Course',
+        key: 'courseId',
+        options: courses.map((c) => ({ label: `${c.code} — ${c.name}`, value: c.id })),
+      },
       {
         label: 'Exam Type',
         key: 'examType',
@@ -48,7 +40,7 @@ export default function PastPapersPage() {
           .map((y) => ({ label: String(y), value: String(y) })),
       },
     ],
-    [papers]
+    [papers, courses]
   );
 
   const filtered = useMemo(() => {
@@ -116,36 +108,28 @@ export default function PastPapersPage() {
           </div>
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-wider text-slate-500">
-              {loading ? 'Loading…' : `${filtered.length} ${filtered.length === 1 ? 'paper' : 'papers'}`}
+              {filtered.length} {filtered.length === 1 ? 'paper' : 'papers'}
             </p>
-            {loading ? (
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {[0, 1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="h-44 animate-pulse rounded-2xl border border-black/5 bg-white" />
-                ))}
-              </div>
-            ) : (
-              <AnimatePresence mode="popLayout">
-                {filtered.length === 0 ? (
-                  <EmptyState title="No papers found" description="Try adjusting your search or filters." />
-                ) : (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                    {filtered.map((paper, idx) => (
-                      <motion.div
-                        key={paper.id}
-                        layout
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.25, delay: idx * 0.03 }}
-                      >
-                        <PaperCard paper={paper} />
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-              </AnimatePresence>
-            )}
+            <AnimatePresence mode="popLayout">
+              {filtered.length === 0 ? (
+                <EmptyState title="No papers found" description="Try adjusting your search or filters." />
+              ) : (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {filtered.map((paper, idx) => (
+                    <motion.div
+                      key={paper.id}
+                      layout
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25, delay: idx * 0.03 }}
+                    >
+                      <PaperCard paper={paper} />
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </PageSection>

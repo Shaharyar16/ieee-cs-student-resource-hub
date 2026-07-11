@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, PencilLine } from 'lucide-react';
-import { courses } from '@/data/courses';
+import { courses as coursesSeed } from '@/data/courses';
+import { useCollection } from '@/hooks/useCollection';
+import type { Course } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import Magnetic from '@/components/effects/Magnetic';
@@ -10,17 +12,30 @@ import FilterPanel, { type FilterGroup } from '@/components/ui/FilterPanel';
 import CourseCard from '@/components/cards/CourseCard';
 import EmptyState from '@/components/ui/EmptyState';
 
-const filterGroups: FilterGroup[] = [
-  {
-    label: 'Credit Hours',
-    key: 'creditHours',
-    options: [...new Set(courses.map((c) => c.creditHours))].map((v) => ({ label: `${v} CH`, value: String(v) })),
-  },
-];
-
 export default function CoursesPage() {
+  const { items: courses } = useCollection<Course>('courses', coursesSeed);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
+
+  const filterGroups: FilterGroup[] = useMemo(
+    () => [
+      {
+        label: 'Semester',
+        key: 'semester',
+        options: [...new Set(courses.map((c) => c.semester).filter((s): s is number => !!s))]
+          .sort((a, b) => a - b)
+          .map((s) => ({ label: `Semester ${s}`, value: String(s) })),
+      },
+      {
+        label: 'Credit Hours',
+        key: 'creditHours',
+        options: [...new Set(courses.map((c) => c.creditHours))]
+          .sort((a, b) => a - b)
+          .map((v) => ({ label: `${v} CH`, value: String(v) })),
+      },
+    ],
+    [courses]
+  );
 
   const filtered = useMemo(() => {
     return courses.filter((c) => {
@@ -28,10 +43,11 @@ export default function CoursesPage() {
         !query ||
         c.name.toLowerCase().includes(query.toLowerCase()) ||
         c.code.toLowerCase().includes(query.toLowerCase());
+      const matchesSemester = !filters.semester || String(c.semester) === filters.semester;
       const matchesCredit = !filters.creditHours || String(c.creditHours) === filters.creditHours;
-      return matchesQuery && matchesCredit;
+      return matchesQuery && matchesSemester && matchesCredit;
     });
-  }, [query, filters]);
+  }, [courses, query, filters]);
 
   return (
     <div className="relative">
@@ -79,7 +95,7 @@ export default function CoursesPage() {
             />
           </div>
           {filtered.length === 0 ? (
-            <EmptyState title="No courses found" description="Try a different search term." />
+            <EmptyState title="No courses found" description="Try a different search term or filter." />
           ) : (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {filtered.map((course) => (

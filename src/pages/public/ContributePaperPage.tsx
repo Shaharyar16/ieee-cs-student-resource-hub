@@ -8,10 +8,22 @@ import FileUploadBox from '@/components/ui/FileUploadBox';
 import SuccessState from '@/components/ui/SuccessState';
 import { courses } from '@/data/courses';
 import { papersService } from '@/services/papersService';
+import { downscaleImage } from '@/utils/image';
 import type { Paper } from '@/types';
+
+function toDataUrl(file: File): Promise<string> {
+  if (file.type.startsWith('image/')) return downscaleImage(file);
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function ContributePaperPage() {
   const [created, setCreated] = useState<Paper | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [form, setForm] = useState({
     course: courses[0].id,
     title: '',
@@ -27,6 +39,7 @@ export default function ContributePaperPage() {
     const yearMatch = form.term.match(/(20\d{2})/);
     const year = yearMatch ? Number(yearMatch[1]) : new Date().getFullYear();
     const term = form.term.replace(/\s*20\d{2}\s*/, ' ').trim() || 'Term';
+    const fileUrl = file ? await toDataUrl(file) : undefined;
     const paper = await papersService.contribute({
       courseId: course.id,
       courseName: course.name,
@@ -37,6 +50,7 @@ export default function ContributePaperPage() {
       instructor: form.instructor,
       contributorName: form.name,
       tags: [],
+      fileUrl,
     });
     setCreated(paper);
   };
@@ -131,7 +145,7 @@ export default function ContributePaperPage() {
               />
             </FormField>
             <FormField label="Upload Paper" required>
-              <FileUploadBox accept=".pdf,.jpg,.png" />
+              <FileUploadBox accept=".pdf,.jpg,.png" onFileSelect={setFile} />
             </FormField>
           </FormShell>
         )}

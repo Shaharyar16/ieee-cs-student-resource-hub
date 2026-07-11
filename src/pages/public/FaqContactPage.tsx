@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, ArrowUpRight, MessageCircle } from 'lucide-react';
-import { faqs } from '@/data/faqs';
+import { faqs as faqsSeed } from '@/data/faqs';
+import { useCollection } from '@/hooks/useCollection';
 import FAQAccordion from '@/components/cards/FAQAccordion';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
@@ -23,6 +24,7 @@ const categories: FAQ['category'][] = [
 ];
 
 export default function FaqContactPage() {
+  const { items: faqs } = useCollection<FAQ>('faqs', faqsSeed);
   const [activeCategory, setActiveCategory] = useState<FAQ['category'] | 'All'>('All');
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', category: 'IEEE CS', message: '' });

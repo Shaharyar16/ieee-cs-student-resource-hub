@@ -1,7 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
-import { galleryAlbums } from '@/data/gallery';
+import { galleryAlbums as gallerySeed } from '@/data/gallery';
+import { useCollection } from '@/hooks/useCollection';
+import type { GalleryAlbum } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import EmptyState from '@/components/ui/EmptyState';
@@ -12,6 +14,7 @@ function formatDate(iso: string) {
 
 export default function GalleryAlbumPage() {
   const { id } = useParams();
+  const { items: galleryAlbums } = useCollection<GalleryAlbum>('gallery', gallerySeed);
   const album = galleryAlbums.find((a) => a.id === id);
 
   if (!album) {

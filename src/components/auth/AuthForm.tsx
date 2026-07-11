@@ -88,7 +88,7 @@ export default function AuthForm({ mode, onModeChange, login, signup, onSuccess 
       <Field
         icon={<Lock className="h-4 w-4" />}
         type="password"
-        placeholder={mode === 'signup' ? 'Create a password (min 6 chars)' : 'Password'}
+        placeholder={mode === 'signup' ? 'Password (8+ chars, 1 number, 1 symbol)' : 'Password'}
         autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
         required
         value={form.password}

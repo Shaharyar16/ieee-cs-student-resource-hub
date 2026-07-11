@@ -11,7 +11,8 @@ import {
   ClipboardList,
   type LucideIcon,
 } from 'lucide-react';
-import { quickLinks } from '@/data/quickLinks';
+import { quickLinks as quickLinksSeed } from '@/data/quickLinks';
+import { useCollection } from '@/hooks/useCollection';
 import type { QuickLink } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
@@ -29,6 +30,7 @@ const categoryMeta: Record<QuickLink['category'], { icon: LucideIcon }> = {
 const categories = Object.keys(categoryMeta) as QuickLink['category'][];
 
 export default function QuickLinksPage() {
+  const { items: quickLinks } = useCollection<QuickLink>('quickLinks', quickLinksSeed);
   return (
     <div className="relative">
       <PageHero

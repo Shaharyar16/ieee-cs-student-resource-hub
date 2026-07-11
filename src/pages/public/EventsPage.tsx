@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { events } from '@/data/events';
+import { events as seedEvents } from '@/data/events';
+import { useCollection } from '@/hooks/useCollection';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import EventCard from '@/components/cards/EventCard';
 import EmptyState from '@/components/ui/EmptyState';
-import type { EventCategory, EventTiming } from '@/types';
+import type { EventCategory, EventItem, EventTiming } from '@/types';
 
 type TabKey = EventTiming | 'featured' | EventCategory;
 
@@ -20,13 +21,14 @@ const tabs: { key: TabKey; label: string }[] = [
 ];
 
 export default function EventsPage() {
+  const { items: events } = useCollection<EventItem>('events', seedEvents);
   const [tab, setTab] = useState<TabKey>('upcoming');
 
   const filtered = useMemo(() => {
     if (tab === 'upcoming' || tab === 'previous') return events.filter((e) => e.timing === tab);
     if (tab === 'featured') return events.filter((e) => e.featured);
     return events.filter((e) => e.category === tab);
-  }, [tab]);
+  }, [events, tab]);
 
   const upcomingCount = events.filter((e) => e.timing === 'upcoming').length;
 

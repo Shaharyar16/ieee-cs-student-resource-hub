@@ -9,11 +9,14 @@ import RouteMap from '@/components/navigation/RouteMap';
 import RouteStepList from '@/components/navigation/RouteStepList';
 import Icon, { type IconName } from '@/components/ui/Icon';
 import { entrances, destinationTypes, defaultRoute } from '@/data/routes';
-import { destinations } from '@/data/destinations';
+import { destinations as destinationsSeed } from '@/data/destinations';
+import { useCollection } from '@/hooks/useCollection';
+import type { Destination } from '@/types';
 
 const stepLabels = ['Entrance', 'Destination Type', 'Destination', 'Route'];
 
 export default function NavigationPage() {
+  const { items: destinations } = useCollection<Destination>('destinations', destinationsSeed);
   const [step, setStep] = useState(0);
   const [entranceId, setEntranceId] = useState<string | null>(null);
   const [typeId, setTypeId] = useState<string | null>(null);

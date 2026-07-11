@@ -55,7 +55,9 @@ export const authService = {
     const normalized = email.trim().toLowerCase();
     if (!name.trim()) throw new AuthError('Please enter your name.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) throw new AuthError('Enter a valid email address.');
-    if (password.length < 6) throw new AuthError('Password must be at least 6 characters.');
+    if (password.length < 8) throw new AuthError('Password must be at least 8 characters long.');
+    if (!/[0-9]/.test(password)) throw new AuthError('Password must include at least one number.');
+    if (!/[^A-Za-z0-9]/.test(password)) throw new AuthError('Password must include at least one special character.');
 
     const users = getUsers();
     if (users.some((u) => u.email === normalized)) {

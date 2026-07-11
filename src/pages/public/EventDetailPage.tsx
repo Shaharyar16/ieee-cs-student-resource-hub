@@ -1,7 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarDays, MapPin, Users, Sparkles, Trophy, ArrowRight } from 'lucide-react';
-import { events } from '@/data/events';
+import { CalendarDays, MapPin, Users, Sparkles, Trophy, ArrowRight, Ticket } from 'lucide-react';
+import { events as seedEvents } from '@/data/events';
+import { useCollection } from '@/hooks/useCollection';
+import type { EventItem } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import EmptyState from '@/components/ui/EmptyState';
@@ -18,6 +20,7 @@ function formatDate(iso: string) {
 
 export default function EventDetailPage() {
   const { id } = useParams();
+  const { items: events } = useCollection<EventItem>('events', seedEvents);
   const event = events.find((e) => e.id === id);
 
   if (!event) {
@@ -43,9 +46,6 @@ export default function EventDetailPage() {
       </div>
     );
   }
-
-  const seatsLeft = event.capacity - event.registered;
-  const percentFull = Math.round((event.registered / event.capacity) * 100);
 
   const info = [
     { icon: CalendarDays, label: 'Date & Time', value: formatDate(event.date), sub: event.time },
@@ -128,26 +128,27 @@ export default function EventDetailPage() {
           {event.timing === 'upcoming' && (
             <div className="lg:sticky lg:top-24 lg:self-start">
               <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-[0_8px_30px_rgba(10,10,12,0.08)]">
-                <div className="flex items-baseline justify-between">
-                  <span className="font-display text-3xl font-bold text-slate-900">{seatsLeft}</span>
-                  <span className="font-mono text-[11px] uppercase tracking-widest text-slate-400">seats left</span>
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ieee-orange/10 text-ieee-orange">
+                    <Ticket className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <p className="font-display text-lg font-bold text-slate-900">
+                      {event.registrationOpen ? 'Registration open' : 'Registration closed'}
+                    </p>
+                    <p className="text-xs text-slate-500">Free · open to all students</p>
+                  </div>
                 </div>
-                <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${percentFull}%` }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8, ease: 'easeOut' }}
-                    className="h-full rounded-full bg-gradient-to-r from-ieee-orange to-ieee-yellow"
-                  />
-                </div>
-                <p className="mt-2 text-xs text-slate-500">
-                  {event.registered} / {event.capacity} registered · {percentFull}% full
-                </p>
 
                 <Magnetic className="mt-6 block">
                   <Link
-                    to={event.registrationOpen ? `/events/${event.id}/register` : '#'}
+                    to={
+                      event.registrationOpen
+                        ? event.registrationFormId
+                          ? `/forms/${event.registrationFormId}`
+                          : `/events/${event.id}/register`
+                        : '#'
+                    }
                     data-cursor="link"
                     className={`flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold text-white transition ${
                       event.registrationOpen
