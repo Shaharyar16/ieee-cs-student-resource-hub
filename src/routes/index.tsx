@@ -34,6 +34,9 @@ import PrivacyDisclaimerPage from '@/pages/public/PrivacyDisclaimerPage';
 import DevelopersPage from '@/pages/public/DevelopersPage';
 import NotFoundPage from '@/pages/public/NotFoundPage';
 
+import LoginPage from '@/pages/auth/LoginPage';
+import SignupPage from '@/pages/auth/SignupPage';
+
 import AdminLoginPage from '@/pages/admin/AdminLoginPage';
 import DashboardPage from '@/pages/admin/DashboardPage';
 import AdminEventsPage from '@/pages/admin/AdminEventsPage';
@@ -89,6 +92,14 @@ export const router = createBrowserRouter([
       { path: 'developers', element: <DevelopersPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  {
+    path: '/signup',
+    element: <SignupPage />,
   },
   {
     path: '/admin/login',
