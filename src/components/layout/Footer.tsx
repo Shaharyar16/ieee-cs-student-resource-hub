@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ArrowUpRight, Check } from 'lucide-react';
+import { ArrowRight, Check, Mail } from 'lucide-react';
 import Magnetic from '@/components/effects/Magnetic';
+import { InstagramIcon, LinkedInIcon } from '@/components/ui/SocialIcons';
 
 const columns = [
   {
@@ -105,22 +106,31 @@ export default function Footer() {
               The central place for past papers, courses, events, navigation, and student project
               showcases at COMSATS.
             </p>
-            <div className="mt-5 flex gap-3 text-sm">
+            <div className="mt-5 flex gap-2.5">
               <a
                 href="https://instagram.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 rounded-full border border-white/10 px-3 py-1.5 text-slate-400 transition hover:border-ieee-orange hover:text-ieee-orange"
+                aria-label="Instagram"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-slate-400 transition hover:border-ieee-orange hover:text-ieee-orange"
               >
-                Instagram <ArrowUpRight className="h-3.5 w-3.5" />
+                <InstagramIcon className="h-[18px] w-[18px]" />
               </a>
               <a
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 rounded-full border border-white/10 px-3 py-1.5 text-slate-400 transition hover:border-ieee-orange hover:text-ieee-orange"
+                aria-label="LinkedIn"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-slate-400 transition hover:border-ieee-orange hover:text-ieee-orange"
               >
-                LinkedIn <ArrowUpRight className="h-3.5 w-3.5" />
+                <LinkedInIcon className="h-[18px] w-[18px]" />
+              </a>
+              <a
+                href="mailto:ieeecs.studentbranch@example.edu"
+                aria-label="Email us"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-slate-400 transition hover:border-ieee-orange hover:text-ieee-orange"
+              >
+                <Mail className="h-[18px] w-[18px]" />
               </a>
             </div>
           </div>

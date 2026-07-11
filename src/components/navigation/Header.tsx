@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, ShieldCheck, Menu, X, LogOut, Rocket, ChevronDown } from 'lucide-react';
+import { Search, Menu, X, LogOut, Rocket, ChevronDown } from 'lucide-react';
 import Magnetic from '@/components/effects/Magnetic';
 import Avatar from '@/components/ui/Avatar';
 import { useAuth } from '@/context/AuthContext';
@@ -157,18 +157,6 @@ export default function Header() {
             </div>
           )}
 
-          <Magnetic className="hidden sm:block">
-            <Link
-              to="/admin/login"
-              data-cursor="link"
-              className="flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-black/5 hover:text-ieee-orange"
-              aria-label="Admin portal"
-              title="Admin portal"
-            >
-              <ShieldCheck className="h-[18px] w-[18px]" strokeWidth={2} />
-            </Link>
-          </Magnetic>
-
           <button
             onClick={() => setOpen((o) => !o)}
             className="flex h-9 w-9 items-center justify-center rounded-full text-slate-600 hover:bg-black/5 lg:hidden"
@@ -249,14 +237,6 @@ export default function Header() {
                   </Link>
                 </div>
               )}
-
-              <Link
-                to="/admin/login"
-                onClick={() => setOpen(false)}
-                className="mt-2 flex items-center gap-1.5 rounded-lg bg-ieee-ink px-3 py-3 text-sm font-semibold text-white"
-              >
-                <ShieldCheck className="h-4 w-4" /> Admin Portal
-              </Link>
             </div>
           </motion.nav>
         )}

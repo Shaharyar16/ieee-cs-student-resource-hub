@@ -59,6 +59,8 @@ body {
 .animate-spin-slow-reverse { animation: spin-slow-reverse 60s linear infinite; }
 .animate-float-y { animation: float-y 6s ease-in-out infinite; }
 .animate-breathe { animation: breathe 4s ease-in-out infinite; }
+.animate-marquee { animation: marquee 32s linear infinite; }
+.animate-marquee:hover { animation-play-state: paused; }
 
 .font-display { font-family: var(--font-display); }
 .font-mono { font-family: var(--font-mono); }

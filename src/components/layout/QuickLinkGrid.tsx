@@ -4,7 +4,6 @@ import {
   ArrowUpRight,
   FileText,
   BookOpen,
-  FlaskConical,
   Mail,
   CalendarDays,
   Compass,
@@ -23,8 +22,7 @@ interface QuickLinkItem {
 
 const items: QuickLinkItem[] = [
   { label: 'Past Papers', description: 'Verified midterms, finals & quizzes across every course.', to: '/past-papers', icon: FileText, wide: true },
-  { label: 'Course CDFs', description: 'Official course description forms, ready to reference.', to: '/courses', icon: BookOpen },
-  { label: 'Lab Manuals', description: 'Weekly lab documents for every practical course.', to: '/courses', icon: FlaskConical },
+  { label: 'Courses', description: 'Course description forms, lab manuals & study resources.', to: '/courses', icon: BookOpen },
   { label: 'Teacher Emails', description: 'Direct contact details for faculty across the department.', to: '/courses/teachers', icon: Mail },
   { label: 'Upcoming Events', description: 'Workshops, hackathons & seminars this semester.', to: '/events', icon: CalendarDays, wide: true },
   { label: 'CS Block Navigation', description: 'Step-by-step indoor routes to any room or lab.', to: '/navigation', icon: Compass },

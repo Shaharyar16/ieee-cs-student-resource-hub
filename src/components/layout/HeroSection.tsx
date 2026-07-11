@@ -1,16 +1,16 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronDown, FileText, BookOpen, CalendarDays, Compass, Layers, Users } from 'lucide-react';
+import { ArrowRight, ChevronDown, BookOpen, CalendarDays, Compass, Layers, Users } from 'lucide-react';
 import Magnetic from '@/components/effects/Magnetic';
+import { courses } from '@/data/courses';
 
 const stats = [
   { value: '500+', label: 'Past Papers' },
   { value: '40+', label: 'Events / Year' },
-  { value: '120+', label: 'Projects Shipped' },
+  { value: `${courses.length}`, label: 'Courses' },
 ];
 
 const modules = [
-  { label: 'Past Papers', to: '/past-papers', icon: FileText },
   { label: 'Courses', to: '/courses', icon: BookOpen },
   { label: 'Events', to: '/events', icon: CalendarDays },
   { label: 'Navigation', to: '/navigation', icon: Compass },
@@ -67,17 +67,17 @@ export default function HeroSection() {
                 data-cursor="link"
                 className="group flex items-center gap-2 rounded-xl bg-ieee-orange px-6 py-3.5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(255,108,12,0.32)] transition hover:bg-ieee-orange-dark"
               >
-                Explore Resources
+                Explore Past Papers
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Magnetic>
             <Magnetic>
               <Link
-                to="/events"
+                to="/contribute"
                 data-cursor="link"
                 className="flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold text-white/90 backdrop-blur transition hover:border-ieee-orange/50 hover:text-ieee-orange"
               >
-                View Events
+                Contribute
               </Link>
             </Magnetic>
           </motion.div>

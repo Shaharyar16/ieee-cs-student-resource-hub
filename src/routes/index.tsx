@@ -1,6 +1,7 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import PublicLayout from '@/components/layout/PublicLayout';
 import AdminLayout from '@/components/layout/AdminLayout';
+import RequireAdmin from '@/components/admin/RequireAdmin';
 
 import HomePage from '@/pages/public/HomePage';
 import AboutPage from '@/pages/public/AboutPage';
@@ -102,12 +103,17 @@ export const router = createBrowserRouter([
     element: <SignupPage />,
   },
   {
-    path: '/admin/login',
+    // Private team portal — unlisted, never linked from the public hub.
+    path: '/portal/login',
     element: <AdminLoginPage />,
   },
   {
-    path: '/admin',
-    element: <AdminLayout />,
+    path: '/portal',
+    element: (
+      <RequireAdmin>
+        <AdminLayout />
+      </RequireAdmin>
+    ),
     children: [
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'events', element: <AdminEventsPage /> },
@@ -126,5 +132,10 @@ export const router = createBrowserRouter([
       { path: 'developers', element: <AdminDevelopersPage /> },
       { path: 'settings', element: <AdminSettingsPage /> },
     ],
+  },
+  {
+    // Retire the old public /admin path — send any leftover bookmarks to the portal login.
+    path: '/admin/*',
+    element: <Navigate to="/portal/login" replace />,
   },
 ]);
