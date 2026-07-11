@@ -153,6 +153,60 @@ export interface ProjectItem {
   verification: VerificationStatus;
 }
 
+// --- Accounts & the Projects social module -------------------------------
+// These mirror what a real auth/projects API will return. The service layer in
+// src/services swaps its localStorage bodies for fetch() calls without any
+// consumer changes.
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  /** Optional avatar URL; when empty the UI renders initials. */
+  avatar: string;
+  createdAt: string;
+}
+
+export interface ProjectComment {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
+  body: string;
+  createdAt: string;
+}
+
+/**
+ * A shared student project post (the "Projects" social module). Likes and
+ * reposts track the account ids that performed them so they can be toggled per
+ * user; base* fields carry seeded popularity so counts/sorting work before any
+ * real accounts exist.
+ */
+export interface ProjectPost {
+  id: string;
+  title: string;
+  tagline: string;
+  description: string;
+  /** One or more people who built it. */
+  creators: string[];
+  techStack: string[];
+  /** Up to 3 image URLs / data URLs. */
+  screenshots: string[];
+  githubUrl?: string;
+  demoUrl?: string;
+  category?: string;
+  /** Account that posted it (null for seeded content). */
+  authorId: string | null;
+  authorName: string;
+  authorAvatar: string;
+  createdAt: string;
+  baseLikes: number;
+  likedBy: string[];
+  baseReposts: number;
+  repostedBy: string[];
+  comments: ProjectComment[];
+}
+
 export interface HierarchyMember {
   id: string;
   name: string;
