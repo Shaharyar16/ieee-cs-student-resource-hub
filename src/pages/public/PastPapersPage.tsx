@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileSearch } from 'lucide-react';
-import { papers } from '@/data/papers';
+import type { Paper } from '@/types';
+import { papersService } from '@/services/papersService';
 import { courses } from '@/data/courses';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
@@ -12,29 +13,43 @@ import FilterPanel, { type FilterGroup } from '@/components/ui/FilterPanel';
 import PaperCard from '@/components/cards/PaperCard';
 import EmptyState from '@/components/ui/EmptyState';
 
-const filterGroups: FilterGroup[] = [
-  {
-    label: 'Course',
-    key: 'courseId',
-    options: courses.map((c) => ({ label: c.code, value: c.id })),
-  },
-  {
-    label: 'Exam Type',
-    key: 'examType',
-    options: ['Midterm', 'Final', 'Quiz', 'Assignment'].map((v) => ({ label: v, value: v })),
-  },
-  {
-    label: 'Year',
-    key: 'year',
-    options: [...new Set(papers.map((p) => p.year))]
-      .sort((a, b) => b - a)
-      .map((y) => ({ label: String(y), value: String(y) })),
-  },
-];
-
 export default function PastPapersPage() {
+  const [papers, setPapers] = useState<Paper[]>([]);
+  const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState('');
   const [filters, setFilters] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    let alive = true;
+    papersService.list().then((data) => {
+      if (alive) {
+        setPapers(data);
+        setLoading(false);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const filterGroups: FilterGroup[] = useMemo(
+    () => [
+      { label: 'Course', key: 'courseId', options: courses.map((c) => ({ label: c.code, value: c.id })) },
+      {
+        label: 'Exam Type',
+        key: 'examType',
+        options: ['Midterm', 'Final', 'Quiz', 'Assignment'].map((v) => ({ label: v, value: v })),
+      },
+      {
+        label: 'Year',
+        key: 'year',
+        options: [...new Set(papers.map((p) => p.year))]
+          .sort((a, b) => b - a)
+          .map((y) => ({ label: String(y), value: String(y) })),
+      },
+    ],
+    [papers]
+  );
 
   const filtered = useMemo(() => {
     return papers.filter((p) => {
@@ -48,7 +63,7 @@ export default function PastPapersPage() {
       const matchesYear = !filters.year || String(p.year) === filters.year;
       return matchesQuery && matchesCourse && matchesExam && matchesYear;
     });
-  }, [query, filters]);
+  }, [papers, query, filters]);
 
   const verifiedCount = papers.filter((p) => p.verification === 'verified').length;
   const totalDownloads = papers.reduce((sum, p) => sum + p.downloads, 0);
@@ -101,28 +116,36 @@ export default function PastPapersPage() {
           </div>
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-wider text-slate-500">
-              {filtered.length} {filtered.length === 1 ? 'paper' : 'papers'}
+              {loading ? 'Loading…' : `${filtered.length} ${filtered.length === 1 ? 'paper' : 'papers'}`}
             </p>
-            <AnimatePresence mode="popLayout">
-              {filtered.length === 0 ? (
-                <EmptyState title="No papers found" description="Try adjusting your search or filters." />
-              ) : (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                  {filtered.map((paper, idx) => (
-                    <motion.div
-                      key={paper.id}
-                      layout
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.25, delay: idx * 0.03 }}
-                    >
-                      <PaperCard paper={paper} />
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </AnimatePresence>
+            {loading ? (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {[0, 1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="h-44 animate-pulse rounded-2xl border border-black/5 bg-white" />
+                ))}
+              </div>
+            ) : (
+              <AnimatePresence mode="popLayout">
+                {filtered.length === 0 ? (
+                  <EmptyState title="No papers found" description="Try adjusting your search or filters." />
+                ) : (
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                    {filtered.map((paper, idx) => (
+                      <motion.div
+                        key={paper.id}
+                        layout
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25, delay: idx * 0.03 }}
+                      >
+                        <PaperCard paper={paper} />
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </AnimatePresence>
+            )}
           </div>
         </div>
       </PageSection>

@@ -1,18 +1,51 @@
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Download, FileText, FlagTriangleRight, BookOpen } from 'lucide-react';
-import { papers } from '@/data/papers';
+import type { Paper } from '@/types';
+import { papersService } from '@/services/papersService';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import SectionHeading from '@/components/layout/SectionHeading';
 import VerificationBadge from '@/components/ui/VerificationBadge';
 import PaperCard from '@/components/cards/PaperCard';
 import EmptyState from '@/components/ui/EmptyState';
+import Avatar from '@/components/ui/Avatar';
 import Magnetic from '@/components/effects/Magnetic';
 
 export default function PaperDetailPage() {
   const { id } = useParams();
-  const paper = papers.find((p) => p.id === id);
+  const [paper, setPaper] = useState<Paper | null>(null);
+  const [related, setRelated] = useState<Paper[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    (async () => {
+      const [found, all] = await Promise.all([papersService.get(id ?? ''), papersService.list()]);
+      if (!alive) return;
+      setPaper(found);
+      if (found) {
+        setRelated(all.filter((p) => p.courseId === found.courseId && p.id !== found.id).slice(0, 3));
+      }
+      setLoading(false);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="relative">
+        <PageHero compact eyebrow="Resources" title="Loading…" breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Past Papers', to: '/past-papers' }, { label: '…' }]} />
+        <PageSection tone="cream" top>
+          <div className="h-96 animate-pulse rounded-3xl border border-black/5 bg-white" />
+        </PageSection>
+      </div>
+    );
+  }
 
   if (!paper) {
     return (
@@ -29,10 +62,7 @@ export default function PaperDetailPage() {
             title="Nothing here"
             description="Head back to the archive to find what you need."
             action={
-              <Link
-                to="/past-papers"
-                className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark"
-              >
+              <Link to="/past-papers" className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark">
                 Back to Past Papers
               </Link>
             }
@@ -42,13 +72,10 @@ export default function PaperDetailPage() {
     );
   }
 
-  const related = papers.filter((p) => p.courseId === paper.courseId && p.id !== paper.id).slice(0, 3);
-
   const details = [
     { label: 'Term', value: `${paper.term} ${paper.year}` },
     { label: 'Exam Type', value: paper.examType },
     { label: 'Instructor', value: paper.instructor },
-    { label: 'Uploaded By', value: paper.uploadedBy },
     { label: 'Uploaded', value: paper.uploadedDate },
     { label: 'Downloads', value: String(paper.downloads) },
   ];
@@ -87,18 +114,27 @@ export default function PaperDetailPage() {
           {/* meta */}
           <div>
             <VerificationBadge status={paper.verification} />
-            <div className="mt-5 flex flex-wrap gap-1.5">
-              {paper.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-full bg-ieee-orange/10 px-2.5 py-1 font-mono text-[11px] text-ieee-orange"
-                >
-                  #{tag}
-                </span>
-              ))}
+
+            {/* contributor credit */}
+            <div className="mt-5 flex items-center gap-3 rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+              <Avatar name={paper.uploadedBy} size="md" />
+              <div>
+                <p className="font-mono text-[10px] uppercase tracking-widest text-slate-400">Contributed by</p>
+                <p className="text-sm font-semibold text-slate-800">{paper.uploadedBy}</p>
+              </div>
             </div>
 
-            <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-5 rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
+            {paper.tags.length > 0 && (
+              <div className="mt-5 flex flex-wrap gap-1.5">
+                {paper.tags.map((tag) => (
+                  <span key={tag} className="rounded-full bg-ieee-orange/10 px-2.5 py-1 font-mono text-[11px] text-ieee-orange">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <dl className="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 rounded-3xl border border-black/5 bg-white p-6 shadow-sm">
               {details.map((d) => (
                 <div key={d.label}>
                   <dt className="font-mono text-[10px] uppercase tracking-widest text-slate-400">{d.label}</dt>
