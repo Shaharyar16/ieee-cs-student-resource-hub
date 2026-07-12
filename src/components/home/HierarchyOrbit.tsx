@@ -40,7 +40,7 @@ const cardVariants: Variants = {
 
 export default function HierarchyOrbit() {
   return (
-    <section id="hierarchy" className="relative px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+    <section id="hierarchy" className="relative px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-xl text-center">
           <span className="font-mono text-xs font-medium uppercase tracking-widest text-ieee-orange">
@@ -66,7 +66,7 @@ export default function HierarchyOrbit() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
           variants={groupVariants}
-          className="mt-14 grid grid-cols-3 gap-x-4 gap-y-10 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7"
+          className="mt-10 grid grid-cols-3 gap-x-4 gap-y-8 sm:mt-14 sm:grid-cols-4 sm:gap-y-10 md:grid-cols-6 lg:grid-cols-7"
         >
           {members.map((member, i) => {
             const blurb = roleBlurb[member.role] ?? fallbackBlurb;

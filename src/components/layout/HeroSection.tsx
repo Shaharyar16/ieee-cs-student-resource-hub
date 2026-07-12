@@ -20,7 +20,7 @@ const modules = [
 
 export default function HeroSection() {
   return (
-    <section id="hero" className="relative flex min-h-[100dvh] flex-col justify-center overflow-hidden px-5 pb-16 pt-28 sm:px-8 lg:px-12">
+    <section id="hero" className="relative flex min-h-[84dvh] flex-col justify-center overflow-hidden px-5 pb-12 pt-24 sm:min-h-[92dvh] sm:px-8 sm:pt-28 lg:px-12">
       <div className="relative mx-auto grid w-full max-w-7xl flex-1 items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-6">
         <div className="text-center lg:text-left">
           <motion.span
@@ -38,7 +38,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.1 }}
             className="mt-6 font-display font-bold tracking-tight text-cream"
-            style={{ fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)', lineHeight: 1.03 }}
+            style={{ fontSize: 'clamp(1.95rem, 7vw, 4.5rem)', lineHeight: 1.05 }}
           >
             Everything CS students
             <br />

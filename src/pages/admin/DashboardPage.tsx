@@ -1,6 +1,20 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CalendarPlus, FileUp, ClipboardList, Inbox, ArrowUpRight } from 'lucide-react';
+import {
+  CalendarPlus,
+  FileUp,
+  ClipboardList,
+  Inbox,
+  ArrowUpRight,
+  ShieldCheck,
+  FileText,
+  BookOpen,
+  CalendarClock,
+  Layers,
+  Megaphone,
+  Image as ImageIcon,
+  CheckCircle2,
+} from 'lucide-react';
 import AdminTopbar from '@/components/admin/AdminTopbar';
 import AdminMetricCard from '@/components/admin/AdminMetricCard';
 import StatusBadge from '@/components/ui/StatusBadge';
@@ -11,7 +25,10 @@ import { courses as coursesSeed } from '@/data/courses';
 import { events as eventsSeed } from '@/data/events';
 import { projectSeed } from '@/data/projectSeed';
 import { submissions as submissionsSeed } from '@/data/submissions';
-import type { Paper, Course, EventItem, ProjectPost, Submission } from '@/types';
+import { dateSheets as dateSheetsSeed } from '@/data/dateSheets';
+import { announcements as announcementsSeed } from '@/data/announcements';
+import { galleryAlbums as gallerySeed } from '@/data/gallery';
+import type { Paper, Course, EventItem, ProjectPost, Submission, DateSheet, Announcement, GalleryAlbum } from '@/types';
 
 const quickActions = [
   { label: 'New Event', to: '/portal/events', icon: CalendarPlus },
@@ -27,33 +44,89 @@ export default function DashboardPage() {
   const { items: events } = useCollection<EventItem>('events', eventsSeed);
   const { items: projects } = useCollection<ProjectPost>('projectPosts', projectSeed);
   const { items: submissions } = useCollection<Submission>('submissions', submissionsSeed);
-  const pendingSubmissions = submissions.filter((s) => s.status === 'pending').length;
+  const { items: dateSheets } = useCollection<DateSheet>('dateSheets', dateSheetsSeed);
+  const { items: announcements } = useCollection<Announcement>('announcements', announcementsSeed);
+  const { items: gallery } = useCollection<GalleryAlbum>('gallery', gallerySeed);
 
-  const overview = [
-    { label: 'Projects Expo Entries', value: projects.length, max: 20 },
-    { label: 'Verified Papers', value: papers.filter((p) => p.verification === 'verified').length, max: papers.length },
-    { label: 'Verified Courses', value: courses.filter((c) => c.verification === 'verified').length, max: courses.length },
+  const papersToVerify = papers.filter((p) => p.verification !== 'verified').length;
+  const submissionsPending = submissions.filter((s) => s.status === 'pending').length;
+  const upcoming = events.filter((e) => e.timing === 'upcoming').length;
+
+  const attention = [
+    {
+      label: 'Papers awaiting verification',
+      count: papersToVerify,
+      to: '/portal/papers',
+      cta: 'Review papers',
+    },
+    {
+      label: 'Submissions to review',
+      count: submissionsPending,
+      to: '/portal/submissions',
+      cta: 'Review submissions',
+    },
+  ];
+
+  const library = [
+    { label: 'Past Papers', value: papers.length, icon: FileText, to: '/portal/papers' },
+    { label: 'Courses', value: courses.length, icon: BookOpen, to: '/portal/courses' },
+    { label: 'Date Sheets', value: dateSheets.length, icon: CalendarClock, to: '/portal/date-sheets' },
+    { label: 'Projects', value: projects.length, icon: Layers, to: '/portal/projects' },
+    { label: 'Announcements', value: announcements.length, icon: Megaphone, to: '/portal/announcements' },
+    { label: 'Gallery Albums', value: gallery.length, icon: ImageIcon, to: '/portal/gallery' },
   ];
 
   return (
     <div>
       <AdminTopbar title="Dashboard" subtitle={admin ? `Welcome back, ${admin.name.split(' ')[0]}` : undefined} />
       <div className="p-4 sm:p-6">
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          <AdminMetricCard label="Total Papers" value={papers.length} icon="file" accent="orange" delay={0} />
-          <AdminMetricCard label="Active Courses" value={courses.length} icon="book" accent="blue" delay={0.05} />
-          <AdminMetricCard
-            label="Upcoming Events"
-            value={events.filter((e) => e.timing === 'upcoming').length}
-            icon="calendar"
-            accent="emerald"
-            delay={0.1}
-          />
-          <AdminMetricCard label="Pending Submissions" value={pendingSubmissions} icon="inbox" accent="amber" delay={0.15} />
+        {/* Needs attention — the first thing an admin should act on */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {attention.map((a, i) => {
+            const clear = a.count === 0;
+            return (
+              <motion.div
+                key={a.label}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.05 }}
+              >
+                <Link
+                  to={a.to}
+                  className={`flex items-center gap-4 rounded-2xl border p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:p-5 ${
+                    clear ? 'border-emerald-200 bg-emerald-50/60' : 'border-amber-200 bg-amber-50/70'
+                  }`}
+                >
+                  <span
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+                      clear ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                    }`}
+                  >
+                    {clear ? <CheckCircle2 className="h-6 w-6" /> : <ShieldCheck className="h-6 w-6" />}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-2xl font-bold text-slate-900">{a.count}</p>
+                    <p className="truncate text-sm text-slate-600">{a.label}</p>
+                  </div>
+                  <span className="hidden shrink-0 items-center gap-1 text-xs font-semibold text-slate-500 sm:flex">
+                    {clear ? 'All clear' : a.cta} <ArrowUpRight className="h-3.5 w-3.5" />
+                  </span>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* quick actions */}
-        <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {/* Metrics — compact 2-up on phones so they don't dominate */}
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+          <AdminMetricCard label="Total Papers" value={papers.length} icon="file" accent="orange" delay={0} />
+          <AdminMetricCard label="Active Courses" value={courses.length} icon="book" accent="blue" delay={0.05} />
+          <AdminMetricCard label="Upcoming Events" value={upcoming} icon="calendar" accent="emerald" delay={0.1} />
+          <AdminMetricCard label="Projects" value={projects.length} icon="layers" accent="amber" delay={0.15} />
+        </div>
+
+        {/* Quick actions */}
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {quickActions.map((a, i) => {
             const Icon = a.icon;
             return (
@@ -65,13 +138,13 @@ export default function DashboardPage() {
               >
                 <Link
                   to={a.to}
-                  className="group flex items-center gap-3 rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-ieee-orange/30 hover:shadow-md"
+                  className="group flex items-center gap-3 rounded-2xl border border-black/5 bg-white p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-ieee-orange/30 hover:shadow-md sm:p-4"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-ieee-orange/10 text-ieee-orange">
                     <Icon className="h-5 w-5" />
                   </span>
                   <span className="text-sm font-semibold text-slate-800">{a.label}</span>
-                  <ArrowUpRight className="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-ieee-orange" />
+                  <ArrowUpRight className="ml-auto hidden h-4 w-4 text-slate-300 transition group-hover:text-ieee-orange sm:block" />
                 </Link>
               </motion.div>
             );
@@ -79,40 +152,12 @@ export default function DashboardPage() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
+          {/* Recent activity */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
-            className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm"
-          >
-            <h3 className="font-display text-base font-bold text-slate-900">Content Overview</h3>
-            <div className="mt-4 flex flex-col gap-4 text-sm">
-              {overview.map((row) => (
-                <div key={row.label}>
-                  <div className="flex justify-between text-slate-600">
-                    <span>{row.label}</span>
-                    <span className="font-mono text-xs text-slate-400">
-                      {row.value}/{row.max}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                    <motion.div
-                      className="h-full rounded-full bg-gradient-to-r from-ieee-orange to-ieee-yellow"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min((row.value / row.max) * 100, 100)}%` }}
-                      transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.35 }}
-            className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm"
+            className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm sm:p-6"
           >
             <div className="flex items-center justify-between">
               <h3 className="font-display text-base font-bold text-slate-900">Recent Submissions</h3>
@@ -122,17 +167,44 @@ export default function DashboardPage() {
             </div>
             <ul className="mt-4 flex flex-col gap-1">
               {submissions.slice(0, 5).map((s) => (
-                <li key={s.id} className="flex items-center justify-between rounded-xl px-2 py-2 transition hover:bg-cream/60">
-                  <div>
-                    <p className="text-sm font-medium capitalize text-slate-800">{s.type.replace(/-/g, ' ')}</p>
-                    <p className="text-xs text-slate-400">
+                <li key={s.id} className="flex items-center justify-between gap-2 rounded-xl px-2 py-2 transition hover:bg-cream/60">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium capitalize text-slate-800">{s.type.replace(/-/g, ' ')}</p>
+                    <p className="truncate text-xs text-slate-400">
                       {s.submittedBy} · {s.submittedAt}
                     </p>
                   </div>
                   <StatusBadge status={s.status} />
                 </li>
               ))}
+              {submissions.length === 0 && <li className="px-2 py-6 text-center text-sm text-slate-400">No submissions yet.</li>}
             </ul>
+          </motion.div>
+
+          {/* Library at a glance */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.35 }}
+            className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm sm:p-6"
+          >
+            <h3 className="font-display text-base font-bold text-slate-900">Content Library</h3>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {library.map((l) => {
+                const Icon = l.icon;
+                return (
+                  <Link
+                    key={l.label}
+                    to={l.to}
+                    className="flex flex-col gap-1 rounded-xl border border-black/5 bg-cream/50 p-3 transition hover:border-ieee-orange/30 hover:bg-cream"
+                  >
+                    <Icon className="h-4 w-4 text-ieee-orange" />
+                    <span className="font-display text-xl font-bold text-slate-900">{l.value}</span>
+                    <span className="text-[11px] text-slate-500">{l.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
       </div>

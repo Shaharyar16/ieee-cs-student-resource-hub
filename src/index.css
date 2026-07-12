@@ -90,6 +90,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Never allow sideways scroll — decorative glows/rings extend past the
+   viewport on small screens; clip them instead of creating a dead scroll gutter.
+   `clip` (not `hidden`) is used so it doesn't break the sticky header. */
+html,
+body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
 body {
   margin: 0;
   background: linear-gradient(180deg, #eef4fb 0%, #f7fafd 40%, #ffffff 100%);

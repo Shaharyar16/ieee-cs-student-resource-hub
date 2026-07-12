@@ -47,7 +47,7 @@ export default function PageHero({
     <>
       <section
         className={`relative overflow-hidden px-5 sm:px-8 lg:px-12 ${
-          compact ? 'pt-28 pb-14 sm:pt-32' : 'pt-32 pb-20 sm:pt-36 sm:pb-24'
+          compact ? 'pt-20 pb-12 sm:pt-28 sm:pb-14' : 'pt-24 pb-16 sm:pt-32 sm:pb-24'
         }`}
       >
         {/* soft brand glow + fine grid, purely decorative */}
@@ -115,7 +115,7 @@ export default function PageHero({
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className={`font-display font-bold tracking-tight text-cream ${eyebrow ? 'mt-5' : ''}`}
-            style={{ fontSize: 'clamp(2.1rem, 4.4vw, 3.5rem)', lineHeight: 1.05 }}
+            style={{ fontSize: 'clamp(1.7rem, 5.2vw, 3.5rem)', lineHeight: 1.08 }}
           >
             {title}
           </motion.h1>

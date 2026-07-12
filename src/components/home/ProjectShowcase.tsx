@@ -13,7 +13,7 @@ export default function ProjectShowcase({ projects }: ProjectShowcaseProps) {
   const [featured, ...rest] = projects;
 
   return (
-    <section id="projects" className="relative overflow-hidden bg-cream px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+    <section id="projects" className="relative overflow-hidden bg-cream px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
       <svg
         viewBox="0 0 200 24"
         preserveAspectRatio="none"
@@ -29,7 +29,7 @@ export default function ProjectShowcase({ projects }: ProjectShowcaseProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end"
+          className="flex flex-col items-center justify-between gap-6 text-center sm:flex-row sm:items-end sm:text-left"
         >
           <div>
             <motion.svg
@@ -38,7 +38,7 @@ export default function ProjectShowcase({ projects }: ProjectShowcaseProps) {
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.8, ease: 'easeOut' }}
               viewBox="0 0 120 16"
-              className="h-4 w-28"
+              className="mx-auto h-4 w-28 sm:mx-0"
               aria-hidden="true"
             >
               <motion.path d="M2,14 Q60,-4 118,14" fill="none" stroke="#ff6c0c" strokeWidth={2.5} strokeLinecap="round" />
@@ -49,12 +49,12 @@ export default function ProjectShowcase({ projects }: ProjectShowcaseProps) {
             <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
               Project Showcase
             </h2>
-            <p className="mt-3 max-w-lg text-slate-600">
+            <p className="mx-auto mt-3 max-w-lg text-slate-600 sm:mx-0">
               A portfolio of what the chapter has shipped — AI, web platforms, and open-source tools
               built by fellow students.
             </p>
           </div>
-          <div className="flex shrink-0 gap-3">
+          <div className="flex shrink-0 flex-wrap justify-center gap-3">
             <Magnetic>
               <Link
                 to="/projects-expo/submit"
