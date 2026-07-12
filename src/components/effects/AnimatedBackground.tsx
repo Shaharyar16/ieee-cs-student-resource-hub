@@ -37,7 +37,7 @@ export default function AnimatedBackground() {
     <div className="pointer-events-none fixed inset-0 -z-10 bg-[#1E1A14]">
       {!reduceMotion && (
         <Canvas
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
           camera={{ position: [0, 0, 9], fov: 55 }}
         >

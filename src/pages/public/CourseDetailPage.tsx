@@ -13,9 +13,9 @@ import {
 } from 'lucide-react';
 import { courses as coursesSeed } from '@/data/courses';
 import { teachers } from '@/data/teachers';
-import { papers } from '@/data/papers';
+import { papers as papersSeed } from '@/data/papers';
 import { useCollection } from '@/hooks/useCollection';
-import type { Course } from '@/types';
+import type { Course, Paper } from '@/types';
 import PageHero from '@/components/layout/PageHero';
 import PageSection from '@/components/layout/PageSection';
 import SectionHeading from '@/components/layout/SectionHeading';
@@ -28,6 +28,7 @@ import Magnetic from '@/components/effects/Magnetic';
 export default function CourseDetailPage() {
   const { id } = useParams();
   const { items: courses } = useCollection<Course>('courses', coursesSeed);
+  const { items: papers } = useCollection<Paper>('papers', papersSeed);
   const course = courses.find((c) => c.id === id);
 
   if (!course) {
@@ -55,7 +56,7 @@ export default function CourseDetailPage() {
   }
 
   const courseTeachers = teachers.filter((t) => course.teacherIds.includes(t.id));
-  const relatedPapers = papers.filter((p) => p.courseId === course.id).slice(0, 3);
+  const relatedPapers = papers.filter((p) => p.courseId === course.id && p.verification === 'verified').slice(0, 3);
   const prereqCourses = (course.prerequisites ?? [])
     .map((code) => courses.find((c) => c.code === code))
     .filter((c): c is Course => !!c);

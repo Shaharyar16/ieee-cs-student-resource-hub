@@ -5,7 +5,7 @@ export const timeline: TimelineEvent[] = [
     id: 'tl-1',
     date: '2020-09-01',
     title: 'Chapter Founded',
-    description: 'The IEEE CS Student Branch Chapter was officially founded with 20 members.',
+    description: 'The IEEE CS Islamabad Branch Chapter was officially founded with 20 members.',
   },
   {
     id: 'tl-2',

@@ -51,7 +51,7 @@ export default function HierarchyPage() {
         eyebrow="Leadership"
         breadcrumb={[{ label: 'Home', to: '/' }, { label: 'About', to: '/about' }, { label: 'Hierarchy' }]}
         title="Leadership Hierarchy"
-        subtitle="The students who lead the IEEE CS Student Branch each semester — and everyone who came before them."
+        subtitle="The students who lead the IEEE CS Islamabad Branch each semester — and everyone who came before them."
         meta={[
           { value: String(terms.length), label: 'Councils Archived' },
           { value: String(current.members.length), label: `Members · ${current.term}` },

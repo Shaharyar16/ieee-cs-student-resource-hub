@@ -25,7 +25,7 @@ export default function AdminSettingsPage() {
           <h3 className="font-display text-base font-bold text-slate-900">Society Information</h3>
           <div className="mt-4 flex flex-col gap-4">
             <AdminField label="Society Name">
-              <AdminInput defaultValue="IEEE Computer Society Student Branch Chapter" />
+              <AdminInput defaultValue="IEEE Computer Society Islamabad Branch Chapter" />
             </AdminField>
             <AdminField label="Contact Email">
               <AdminInput defaultValue="ieeecs.studentbranch@example.edu" />

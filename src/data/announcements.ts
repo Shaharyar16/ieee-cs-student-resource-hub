@@ -5,7 +5,7 @@ export const announcements: Announcement[] = [
     id: 'ann-1',
     title: 'IEEE CS Workshop registrations are now open',
     summary: 'Join our hands-on "Modern Web Systems" workshop this month.',
-    body: 'The IEEE Computer Society Student Branch Chapter is hosting a two-day hands-on workshop covering modern web systems, deployment pipelines, and cloud basics. Seats are limited to 80 participants and registration closes one week before the event.',
+    body: 'The IEEE Computer Society Islamabad Branch Chapter is hosting a two-day hands-on workshop covering modern web systems, deployment pipelines, and cloud basics. Seats are limited to 80 participants and registration closes one week before the event.',
     date: '2026-06-20',
     category: 'event',
     pinned: true,
@@ -39,7 +39,7 @@ export const announcements: Announcement[] = [
   {
     id: 'ann-5',
     title: 'New executive council elected for FA26',
-    summary: 'Meet the new IEEE CS Student Branch leadership team.',
+    summary: 'Meet the new IEEE CS Islamabad Branch leadership team.',
     body: 'Congratulations to the newly elected executive council for the Fall 2026 term. Find the full hierarchy on the About page.',
     date: '2026-05-28',
     category: 'general',

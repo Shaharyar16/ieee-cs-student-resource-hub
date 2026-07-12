@@ -1,31 +1,20 @@
 import type { ProjectPost, ProjectComment, User } from '@/types';
-import { readJSON, writeJSON, makeId } from '@/utils/storage';
+import { makeId } from '@/utils/storage';
+import { readCollection, writeCollection } from '@/services/store';
 import { projectSeed } from '@/data/projectSeed';
 
 /**
- * Mock projects backend over localStorage. Async + promise-based so swapping in
- * a real API later means replacing the bodies with `fetch` calls only. Likes and
- * reposts are stored as the set of account ids that performed them (so they
- * toggle per user); base* counts carry seeded popularity.
+ * Projects feed backed by the shared "projectPosts" collection, so the public
+ * feed and the admin Projects page read/write the exact same data (admin
+ * moderation is reflected live). Async + API-shaped for an easy backend swap.
+ * Likes/reposts are stored as the set of account ids that performed them.
  */
 
-const KEY = 'ieeecs_project_posts';
+export const PROJECTS_KEY = 'projectPosts';
 const delay = (ms = 250) => new Promise((r) => setTimeout(r, ms));
 
-function readAll(): ProjectPost[] {
-  const existing = readJSON<ProjectPost[] | null>(KEY, null);
-  if (existing) return existing;
-  writeJSON(KEY, projectSeed);
-  return projectSeed;
-}
-
-function writeAll(posts: ProjectPost[]): void {
-  try {
-    writeJSON(KEY, posts);
-  } catch {
-    throw new Error('Storage is full — try smaller screenshots or remove one.');
-  }
-}
+const readAll = (): ProjectPost[] => readCollection<ProjectPost>(PROJECTS_KEY, projectSeed);
+const writeAll = (posts: ProjectPost[]): void => writeCollection(PROJECTS_KEY, posts);
 
 // --- pure helpers usable directly by the UI --------------------------------
 export const likeCount = (p: ProjectPost) => p.baseLikes + p.likedBy.length;

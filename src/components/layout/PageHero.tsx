@@ -2,7 +2,6 @@ import { Fragment, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import AnimatedBackground from '@/components/effects/AnimatedBackground';
 
 export interface Crumb {
   label: string;
@@ -46,8 +45,6 @@ export default function PageHero({
 
   return (
     <>
-      <AnimatedBackground />
-
       <section
         className={`relative overflow-hidden px-5 sm:px-8 lg:px-12 ${
           compact ? 'pt-28 pb-14 sm:pt-32' : 'pt-32 pb-20 sm:pt-36 sm:pb-24'

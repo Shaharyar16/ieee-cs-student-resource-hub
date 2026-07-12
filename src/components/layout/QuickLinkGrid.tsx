@@ -9,6 +9,7 @@ import {
   Compass,
   LayoutGrid,
   HeartHandshake,
+  CalendarClock,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -26,8 +27,9 @@ const items: QuickLinkItem[] = [
   { label: 'Teacher Emails', description: 'Direct contact details for faculty across the department.', to: '/courses/teachers', icon: Mail },
   { label: 'Upcoming Events', description: 'Workshops, hackathons & seminars this semester.', to: '/events', icon: CalendarDays, wide: true },
   { label: 'CS Block Navigation', description: 'Step-by-step indoor routes to any room or lab.', to: '/navigation', icon: Compass },
+  { label: 'Date Sheets', description: 'Exam schedules by program & semester.', to: '/date-sheets', icon: CalendarClock },
   { label: 'Project Showcase', description: 'Browse and submit student-built projects & open source.', to: '/projects-expo', icon: LayoutGrid },
-  { label: 'Contribute Resources', description: 'Upload a paper, report an issue, or help other students.', to: '/contribute', icon: HeartHandshake },
+  { label: 'Contribute Resources', description: 'Upload a paper, report an issue, or help other students.', to: '/contribute', icon: HeartHandshake, wide: true },
 ];
 
 const groupVariants: Variants = {

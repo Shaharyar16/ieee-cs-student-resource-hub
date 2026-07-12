@@ -6,12 +6,17 @@ import AnnouncementBar from '@/components/navigation/AnnouncementBar';
 import ScrollToTop from '@/components/effects/ScrollToTop';
 import CursorField from '@/components/effects/CursorField';
 import CurvedScrollBar from '@/components/effects/CurvedScrollBar';
+import AnimatedBackground from '@/components/effects/AnimatedBackground';
 
 export default function PublicLayout() {
   const location = useLocation();
 
   return (
     <div className="cursor-none-fine flex min-h-screen flex-col">
+      {/* One persistent 3D field for the whole site — mounted once here so it
+          never remounts (and stutters) between page navigations. */}
+      <AnimatedBackground />
+
       {/* Global route + ambient behaviors shared by every public page. */}
       <ScrollToTop />
       <CursorField />

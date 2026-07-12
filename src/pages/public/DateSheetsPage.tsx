@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarClock, Download, Info, FileX2 } from 'lucide-react';
-import type { DateSheet } from '@/types';
+import { PROGRAMS, type DateSheet, type Program } from '@/types';
 import { dateSheets as seedDateSheets, currentTerm } from '@/data/dateSheets';
 import { useCollection } from '@/hooks/useCollection';
 import PageHero from '@/components/layout/PageHero';
@@ -13,15 +13,16 @@ const isPdf = (url: string) => url.startsWith('data:application/pdf') || /\.pdf$
 
 export default function DateSheetsPage() {
   const { items: sheets } = useCollection<DateSheet>('dateSheets', seedDateSheets);
+  const [program, setProgram] = useState<Program>('Computer Science');
   const [semester, setSemester] = useState(1);
 
   const { shown, isFallback } = useMemo(() => {
-    const forSem = sheets.filter((s) => s.semester === semester);
-    const current = forSem.find((s) => s.term === currentTerm.term && s.year === currentTerm.year);
-    const latest = [...forSem].sort((a, b) => new Date(b.uploadedDate).getTime() - new Date(a.uploadedDate).getTime())[0];
+    const scoped = sheets.filter((s) => s.program === program && s.semester === semester);
+    const current = scoped.find((s) => s.term === currentTerm.term && s.year === currentTerm.year);
+    const latest = [...scoped].sort((a, b) => new Date(b.uploadedDate).getTime() - new Date(a.uploadedDate).getTime())[0];
     const resolved = current ?? latest ?? null;
     return { shown: resolved, isFallback: !!resolved && !current };
-  }, [sheets, semester]);
+  }, [sheets, program, semester]);
 
   return (
     <div className="relative">
@@ -30,37 +31,61 @@ export default function DateSheetsPage() {
         eyebrow="Exams"
         breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Date Sheets' }]}
         title="Exam Date Sheets"
-        subtitle={`Pick your semester to see the exam schedule for ${currentTerm.term} ${currentTerm.year}. If it isn't up yet, we'll show the most recent one.`}
-        meta={[{ value: `${new Set(sheets.map((s) => s.semester)).size}`, label: 'Semesters Available' }]}
+        subtitle={`Pick your program and semester to see the ${currentTerm.term} ${currentTerm.year} exam schedule. If it isn't up yet, we'll show the most recent one.`}
+        meta={[
+          { value: `${PROGRAMS.length}`, label: 'Programs' },
+          { value: `${sheets.length}`, label: 'Sheets Uploaded' },
+        ]}
       />
 
       <PageSection tone="cream" top width="narrow">
+        {/* program selector */}
+        <div>
+          <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-slate-400">Program</p>
+          <div className="flex flex-wrap gap-2">
+            {PROGRAMS.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setProgram(p)}
+                data-cursor="link"
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  program === p
+                    ? 'bg-ieee-ink text-white shadow-sm'
+                    : 'border border-black/10 bg-white text-slate-600 hover:border-ieee-orange/50 hover:text-ieee-orange'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* semester selector */}
-        <div className="flex flex-wrap gap-2">
-          {semesters.map((s) => {
-            const has = sheets.some((d) => d.semester === s);
-            return (
+        <div className="mt-6">
+          <p className="mb-2 font-mono text-[11px] uppercase tracking-widest text-slate-400">Semester</p>
+          <div className="flex flex-wrap gap-2">
+            {semesters.map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => setSemester(s)}
                 data-cursor="link"
-                className={`relative rounded-full px-4 py-2 text-sm font-semibold transition ${
+                className={`h-11 w-11 rounded-full text-sm font-semibold transition ${
                   semester === s
                     ? 'bg-ieee-orange text-white shadow-[0_6px_20px_rgba(255,108,12,0.3)]'
                     : 'border border-black/10 bg-white text-slate-600 hover:border-ieee-orange/50 hover:text-ieee-orange'
                 }`}
               >
-                Semester {s}
-                {!has && <span className="ml-1 text-[10px] opacity-60">·</span>}
+                {s}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={semester}
+            key={`${program}-${semester}`}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
@@ -73,8 +98,9 @@ export default function DateSheetsPage() {
                   <div className="flex items-start gap-2 border-b border-amber-200 bg-amber-50 px-5 py-3 text-sm text-amber-800">
                     <Info className="mt-0.5 h-4 w-4 shrink-0" />
                     <span>
-                      <span className="font-semibold">{currentTerm.term} {currentTerm.year}</span> date sheet isn't
-                      uploaded yet — showing the most recent one ({shown.term} {shown.year}).
+                      The <span className="font-semibold">{currentTerm.term} {currentTerm.year}</span> date sheet
+                      for {program}, Semester {semester} isn't up yet — showing the most recent one ({shown.term}{' '}
+                      {shown.year}).
                     </span>
                   </div>
                 )}
@@ -94,7 +120,9 @@ export default function DateSheetsPage() {
                     </span>
                     <div>
                       <p className="font-display font-bold text-slate-900">{shown.title}</p>
-                      <p className="text-xs text-slate-500">Uploaded {shown.uploadedDate}</p>
+                      <p className="text-xs text-slate-500">
+                        {shown.program} · Uploaded {shown.uploadedDate}
+                      </p>
                     </div>
                   </div>
                   <a
@@ -114,7 +142,7 @@ export default function DateSheetsPage() {
                 <FileX2 className="h-10 w-10 text-slate-300" />
                 <h3 className="mt-3 font-display text-lg font-bold text-slate-700">No date sheet uploaded</h3>
                 <p className="mt-1 text-sm text-slate-500">
-                  The Semester {semester} date sheet hasn't been added yet. Check back closer to exams.
+                  The {program}, Semester {semester} date sheet hasn't been added yet. Check back closer to exams.
                 </p>
               </div>
             )}

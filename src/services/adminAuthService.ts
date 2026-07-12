@@ -1,6 +1,10 @@
 import type { AdminUser } from '@/types';
-import { adminUsers } from '@/data/adminUsers';
+import { adminUsers as seedAdminUsers } from '@/data/adminUsers';
 import { readJSON, writeJSON } from '@/utils/storage';
+import { readCollection } from '@/services/store';
+
+/** Read the live admin-users collection so people invited from the panel can log in. */
+const getAdmins = (): AdminUser[] => readCollection<AdminUser>('adminUsers', seedAdminUsers);
 
 /**
  * Admin (team) authentication — completely separate from student accounts.
@@ -25,12 +29,12 @@ export const adminAuthService = {
   getCurrentAdmin(): AdminUser | null {
     const id = readJSON<string | null>(SESSION_KEY, null);
     if (!id) return null;
-    return adminUsers.find((u) => u.id === id) ?? null;
+    return getAdmins().find((u) => u.id === id) ?? null;
   },
 
   async loginAdmin(email: string, password: string): Promise<AdminUser> {
     await delay();
-    const admin = adminUsers.find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+    const admin = getAdmins().find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
     if (!admin || password !== DEMO_PASSWORD) {
       throw new AdminAuthError('Invalid team credentials.');
     }

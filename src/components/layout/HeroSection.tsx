@@ -30,7 +30,7 @@ export default function HeroSection() {
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-1.5 font-mono text-[11px] font-medium uppercase tracking-wider text-ieee-orange backdrop-blur"
           >
             <span className="h-1.5 w-1.5 animate-pulse-slow rounded-full bg-ieee-orange" />
-            IEEE Computer Society · COMSATS Student Branch
+            IEEE Computer Society · COMSATS Islamabad Branch
           </motion.span>
 
           <motion.h1

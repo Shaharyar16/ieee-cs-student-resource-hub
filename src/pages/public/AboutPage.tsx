@@ -61,7 +61,7 @@ export default function AboutPage() {
           <>
             IEEE Computer Society
             <br />
-            <span className="text-ieee-orange">Student Branch Chapter</span>
+            <span className="text-ieee-orange">Islamabad Branch Chapter</span>
           </>
         }
         subtitle="The world's leading membership organization for computing professionals — brought to campus. We run the mentorship, events and technical resources behind everything on this hub."

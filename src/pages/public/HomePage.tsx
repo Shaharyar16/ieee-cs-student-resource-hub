@@ -7,7 +7,6 @@ import QuickLinkGrid from '@/components/layout/QuickLinkGrid';
 import EventsShowcase from '@/components/home/EventsShowcase';
 import ProjectShowcase from '@/components/home/ProjectShowcase';
 import HierarchyOrbit from '@/components/home/HierarchyOrbit';
-import AnimatedBackground from '@/components/effects/AnimatedBackground';
 import ScrollProgress from '@/components/effects/ScrollProgress';
 import Magnetic from '@/components/effects/Magnetic';
 import { events as seedEvents } from '@/data/events';
@@ -24,7 +23,6 @@ export default function HomePage() {
 
   return (
     <div className="relative">
-      <AnimatedBackground />
       <ScrollProgress />
 
       <HeroSection />
@@ -49,7 +47,7 @@ export default function HomePage() {
                 Who We Are
               </span>
               <h3 className="mt-3 max-w-xl font-display text-2xl font-bold text-slate-900 sm:text-3xl">
-                IEEE Computer Society — Student Branch Chapter
+                IEEE Computer Society — Islamabad Branch Chapter
               </h3>
               <p className="mt-3 max-w-xl text-slate-600">
                 The world&apos;s leading membership organization for computing professionals, brought

@@ -43,8 +43,12 @@ export default function PastPapersPage() {
     [papers, courses]
   );
 
+  // Only moderator-verified papers are shown publicly — anything a student
+  // contributes stays in the admin verification queue until approved.
+  const publicPapers = useMemo(() => papers.filter((p) => p.verification === 'verified'), [papers]);
+
   const filtered = useMemo(() => {
-    return papers.filter((p) => {
+    return publicPapers.filter((p) => {
       const matchesQuery =
         !query ||
         p.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -57,8 +61,8 @@ export default function PastPapersPage() {
     });
   }, [papers, query, filters]);
 
-  const verifiedCount = papers.filter((p) => p.verification === 'verified').length;
-  const totalDownloads = papers.reduce((sum, p) => sum + p.downloads, 0);
+  const totalDownloads = publicPapers.reduce((sum, p) => sum + p.downloads, 0);
+  const courseCount = new Set(publicPapers.map((p) => p.courseId)).size;
 
   return (
     <div className="relative">
@@ -69,8 +73,8 @@ export default function PastPapersPage() {
         title="Past Papers Archive"
         subtitle="Browse student-contributed and moderator-verified exam papers across every course — no digging through group chats."
         meta={[
-          { value: `${papers.length}`, label: 'Papers' },
-          { value: `${verifiedCount}`, label: 'Verified' },
+          { value: `${publicPapers.length}`, label: 'Papers' },
+          { value: `${courseCount}`, label: 'Courses' },
           { value: totalDownloads.toLocaleString(), label: 'Downloads' },
         ]}
       >

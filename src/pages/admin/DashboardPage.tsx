@@ -5,11 +5,13 @@ import AdminTopbar from '@/components/admin/AdminTopbar';
 import AdminMetricCard from '@/components/admin/AdminMetricCard';
 import StatusBadge from '@/components/ui/StatusBadge';
 import { adminAuthService } from '@/services/adminAuthService';
-import { papers } from '@/data/papers';
-import { courses } from '@/data/courses';
-import { events } from '@/data/events';
-import { projects } from '@/data/projects';
-import { submissions } from '@/data/submissions';
+import { useCollection } from '@/hooks/useCollection';
+import { papers as papersSeed } from '@/data/papers';
+import { courses as coursesSeed } from '@/data/courses';
+import { events as eventsSeed } from '@/data/events';
+import { projectSeed } from '@/data/projectSeed';
+import { submissions as submissionsSeed } from '@/data/submissions';
+import type { Paper, Course, EventItem, ProjectPost, Submission } from '@/types';
 
 const quickActions = [
   { label: 'New Event', to: '/portal/events', icon: CalendarPlus },
@@ -20,6 +22,11 @@ const quickActions = [
 
 export default function DashboardPage() {
   const admin = adminAuthService.getCurrentAdmin();
+  const { items: papers } = useCollection<Paper>('papers', papersSeed);
+  const { items: courses } = useCollection<Course>('courses', coursesSeed);
+  const { items: events } = useCollection<EventItem>('events', eventsSeed);
+  const { items: projects } = useCollection<ProjectPost>('projectPosts', projectSeed);
+  const { items: submissions } = useCollection<Submission>('submissions', submissionsSeed);
   const pendingSubmissions = submissions.filter((s) => s.status === 'pending').length;
 
   const overview = [

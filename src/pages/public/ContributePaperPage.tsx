@@ -66,7 +66,7 @@ export default function ContributePaperPage() {
           { label: 'Contribute' },
         ]}
         title="Contribute a Past Paper"
-        subtitle="Help your juniors by sharing a past exam paper. Add your name and we'll credit you as the contributor on the paper — or stay anonymous, your call."
+        subtitle="Help your juniors by sharing a past exam paper. Every submission is reviewed by our team and appears in the archive once it's verified."
       />
 
       <PageSection tone="cream" top>
@@ -75,27 +75,19 @@ export default function ContributePaperPage() {
             title="Paper submitted for review!"
             description={`Thanks${
               created.uploadedBy && created.uploadedBy !== 'Anonymous' ? `, ${created.uploadedBy}` : ''
-            }! It's now pending moderator review — you can already see it credited to you.`}
+            }! It's now in the review queue — once a moderator verifies it, it'll appear in the archive as “Verified by IEEE CS”.`}
             action={
-              <div className="flex flex-wrap justify-center gap-3">
-                <Link
-                  to={`/past-papers/${created.id}`}
-                  className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark"
-                >
-                  View your paper
-                </Link>
-                <Link
-                  to="/past-papers"
-                  className="rounded-lg border border-black/10 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-ieee-orange/40 hover:text-ieee-orange"
-                >
-                  Back to Past Papers
-                </Link>
-              </div>
+              <Link
+                to="/past-papers"
+                className="rounded-lg bg-ieee-orange px-5 py-2.5 text-sm font-semibold text-white hover:bg-ieee-orange-dark"
+              >
+                Back to Past Papers
+              </Link>
             }
           />
         ) : (
           <FormShell onSubmit={handleSubmit} submitLabel="Submit Paper">
-            <FormField label="Contributor Name" hint="Shown on the paper as “Contributed by”. Leave blank to stay Anonymous.">
+            <FormField label="Your Name" hint="Optional — kept private, for our records only.">
               <TextInput
                 placeholder="Your name (optional)"
                 value={form.name}

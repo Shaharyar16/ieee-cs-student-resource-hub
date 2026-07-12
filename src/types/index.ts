@@ -96,9 +96,21 @@ export interface Course {
   verification: VerificationStatus;
 }
 
+/** Degree programs offered — used to scope date sheets. */
+export const PROGRAMS = [
+  'Computer Science',
+  'Software Engineering',
+  'Artificial Intelligence',
+  'Data Science',
+  'Cyber Security',
+] as const;
+export type Program = (typeof PROGRAMS)[number];
+
 export interface DateSheet {
   id: string;
   title: string;
+  /** Degree program / major this sheet belongs to. */
+  program: Program;
   semester: number;
   /** e.g. "Fall", "Spring". */
   term: string;

@@ -15,7 +15,7 @@ export default function DevelopersPage() {
         eyebrow="The Team"
         breadcrumb={[{ label: 'Home', to: '/' }, { label: 'Developers' }]}
         title="Meet the Developers"
-        subtitle="This resource hub is designed and built by student volunteers from the IEEE CS Student Branch Chapter. Here's the team behind it."
+        subtitle="This resource hub is designed and built by student volunteers from the IEEE CS Islamabad Branch Chapter. Here's the team behind it."
         meta={[{ value: `${developers.length}`, label: 'Contributors' }]}
       />
 

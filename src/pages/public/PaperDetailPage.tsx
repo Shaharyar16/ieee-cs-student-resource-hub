@@ -50,7 +50,9 @@ export default function PaperDetailPage() {
     );
   }
 
-  const related = papers.filter((p) => p.courseId === paper.courseId && p.id !== paper.id).slice(0, 3);
+  const related = papers
+    .filter((p) => p.courseId === paper.courseId && p.id !== paper.id && p.verification === 'verified')
+    .slice(0, 3);
   const fileReady = hasFile(paper.fileUrl);
 
   const details = [

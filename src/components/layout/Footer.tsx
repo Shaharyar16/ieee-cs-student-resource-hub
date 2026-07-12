@@ -156,7 +156,7 @@ export default function Footer() {
       </div>
 
       <div className="relative border-t border-white/10 px-4 py-5 text-center font-mono text-[11px] text-slate-500 sm:px-6">
-        © {new Date().getFullYear()} IEEE Computer Society Student Branch Chapter. All data on this
+        © {new Date().getFullYear()} IEEE Computer Society Islamabad Branch Chapter. All data on this
         prototype is for demonstration only.
       </div>
     </footer>

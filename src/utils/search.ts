@@ -1,40 +1,59 @@
-import type { SearchResult } from '@/types';
-import { papers } from '@/data/papers';
-import { courses } from '@/data/courses';
-import { events } from '@/data/events';
-import { projects } from '@/data/projects';
-import { announcements } from '@/data/announcements';
-import { faqs } from '@/data/faqs';
-import { destinations } from '@/data/destinations';
+import type {
+  SearchResult,
+  Paper,
+  Course,
+  EventItem,
+  Announcement,
+  FAQ,
+  Destination,
+  QuickLink,
+  ProjectPost,
+  DateSheet,
+} from '@/types';
+import { readCollection } from '@/services/store';
+import { papers as papersSeed } from '@/data/papers';
+import { courses as coursesSeed } from '@/data/courses';
+import { events as eventsSeed } from '@/data/events';
+import { announcements as announcementsSeed } from '@/data/announcements';
+import { faqs as faqsSeed } from '@/data/faqs';
+import { destinations as destinationsSeed } from '@/data/destinations';
+import { quickLinks as quickLinksSeed } from '@/data/quickLinks';
+import { projectSeed } from '@/data/projectSeed';
+import { dateSheets as dateSheetsSeed } from '@/data/dateSheets';
 import { teachers } from '@/data/teachers';
-import { quickLinks } from '@/data/quickLinks';
 
+/** Normalize away spaces/punctuation so "CS 301" matches "CS-301". */
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+/** Built fresh per search so results always reflect the live collections. */
 function buildIndex(): SearchResult[] {
   const results: SearchResult[] = [];
 
-  papers.forEach((p) =>
-    results.push({
-      id: p.id,
-      title: p.title,
-      type: 'Past Paper',
-      description: `${p.courseName} — ${p.term} ${p.year} ${p.examType}`,
-      tags: p.tags,
-      link: `/past-papers/${p.id}`,
-    })
-  );
+  readCollection<Paper>('papers', papersSeed)
+    .filter((p) => p.verification === 'verified')
+    .forEach((p) =>
+      results.push({
+        id: p.id,
+        title: p.title,
+        type: 'Past Paper',
+        description: `${p.courseName} — ${p.term} ${p.year} ${p.examType}`,
+        tags: p.tags,
+        link: `/past-papers/${p.id}`,
+      })
+    );
 
-  courses.forEach((c) =>
+  readCollection<Course>('courses', coursesSeed).forEach((c) =>
     results.push({
       id: c.id,
       title: `${c.code} — ${c.name}`,
       type: 'Course',
       description: c.description,
-      tags: [c.department],
+      tags: [c.code, c.department, c.semester ? `Semester ${c.semester}` : ''].filter(Boolean),
       link: `/courses/${c.id}`,
     })
   );
 
-  events.forEach((e) =>
+  readCollection<EventItem>('events', eventsSeed).forEach((e) =>
     results.push({
       id: e.id,
       title: e.title,
@@ -45,7 +64,7 @@ function buildIndex(): SearchResult[] {
     })
   );
 
-  projects.forEach((p) =>
+  readCollection<ProjectPost>('projectPosts', projectSeed).forEach((p) =>
     results.push({
       id: p.id,
       title: p.title,
@@ -56,7 +75,7 @@ function buildIndex(): SearchResult[] {
     })
   );
 
-  announcements.forEach((a) =>
+  readCollection<Announcement>('announcements', announcementsSeed).forEach((a) =>
     results.push({
       id: a.id,
       title: a.title,
@@ -67,18 +86,22 @@ function buildIndex(): SearchResult[] {
     })
   );
 
-  faqs.forEach((f) =>
+  readCollection<DateSheet>('dateSheets', dateSheetsSeed).forEach((d) =>
     results.push({
-      id: f.id,
-      title: f.question,
-      type: 'FAQ',
-      description: f.answer,
-      tags: [f.category],
-      link: `/faq-contact`,
+      id: d.id,
+      title: d.title,
+      type: 'Date Sheet',
+      description: `${d.program} · Semester ${d.semester}`,
+      tags: [d.program, `Semester ${d.semester}`],
+      link: `/date-sheets`,
     })
   );
 
-  destinations.forEach((d) =>
+  readCollection<FAQ>('faqs', faqsSeed).forEach((f) =>
+    results.push({ id: f.id, title: f.question, type: 'FAQ', description: f.answer, tags: [f.category], link: `/faq-contact` })
+  );
+
+  readCollection<Destination>('destinations', destinationsSeed).forEach((d) =>
     results.push({
       id: d.id,
       title: d.name,
@@ -100,7 +123,7 @@ function buildIndex(): SearchResult[] {
     })
   );
 
-  quickLinks.forEach((q) =>
+  readCollection<QuickLink>('quickLinks', quickLinksSeed).forEach((q) =>
     results.push({
       id: q.id,
       title: q.label,
@@ -114,15 +137,12 @@ function buildIndex(): SearchResult[] {
   return results;
 }
 
-const searchIndex = buildIndex();
-
 export function search(query: string): SearchResult[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return searchIndex.filter(
-    (item) =>
-      item.title.toLowerCase().includes(q) ||
-      item.description.toLowerCase().includes(q) ||
-      item.tags.some((tag) => tag.toLowerCase().includes(q))
-  );
+  const nq = norm(q);
+  return buildIndex().filter((item) => {
+    const hay = `${item.title} ${item.description} ${item.tags.join(' ')}`.toLowerCase();
+    return hay.includes(q) || (nq.length >= 2 && norm(hay).includes(nq));
+  });
 }

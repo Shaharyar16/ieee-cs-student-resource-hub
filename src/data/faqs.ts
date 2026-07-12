@@ -5,7 +5,7 @@ export const faqs: FAQ[] = [
     id: 'faq-1',
     question: 'What is IEEE Computer Society?',
     answer:
-      'IEEE Computer Society is the world’s leading membership organization for computing professionals, and our Student Branch Chapter brings its resources, events, and mentorship directly to students on campus.',
+      'IEEE Computer Society is the world’s leading membership organization for computing professionals, and our Islamabad Branch Chapter brings its resources, events, and mentorship directly to students on campus.',
     category: 'IEEE CS',
   },
   {

@@ -91,8 +91,8 @@ function CameraRig({ pointer, scroll }: { pointer: MutableRefObject<Pointer>; sc
 export default function Scene3D({ pointer, scroll }: { pointer: MutableRefObject<Pointer>; scroll: MutableRefObject<number> }) {
   return (
     <>
-      <ParticleShell pointer={pointer} count={700} radius={[3, 9]} size={0.045} color="#f5ead9" opacity={0.42} speed={0.02} />
-      <ParticleShell pointer={pointer} count={110} radius={[2.5, 7]} size={0.065} color="#ff6c0c" opacity={0.6} speed={-0.03} />
+      <ParticleShell pointer={pointer} count={440} radius={[3, 9]} size={0.05} color="#f5ead9" opacity={0.42} speed={0.02} />
+      <ParticleShell pointer={pointer} count={80} radius={[2.5, 7]} size={0.07} color="#ff6c0c" opacity={0.6} speed={-0.03} />
       <OrbCore />
       <CameraRig pointer={pointer} scroll={scroll} />
     </>

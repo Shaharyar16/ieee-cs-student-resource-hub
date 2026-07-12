@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ShieldCheck } from 'lucide-react';
 import type { Paper } from '@/types';
-import VerificationBadge from '@/components/ui/VerificationBadge';
 
 interface PaperCardProps {
   paper: Paper;
@@ -19,7 +19,9 @@ export default function PaperCard({ paper }: PaperCardProps) {
             <h3 className="font-semibold text-slate-900">{paper.title}</h3>
             <p className="text-sm text-slate-500">{paper.courseName}</p>
           </div>
-          <VerificationBadge status={paper.verification} size="sm" />
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700" title="Verified by IEEE CS">
+            <ShieldCheck className="h-3 w-3" /> IEEE CS
+          </span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {paper.tags.map((tag) => (

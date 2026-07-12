@@ -21,7 +21,7 @@ export const banners: Banner[] = [
   },
   {
     id: 'ban-3',
-    title: 'IEEE CS Student Branch — New Council Announced',
+    title: 'IEEE CS Islamabad Branch — New Council Announced',
     subtitle: 'Meet the FA26 executive team',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80',
     ctaLabel: 'Meet the Team',
