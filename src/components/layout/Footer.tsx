@@ -3,39 +3,10 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Check, Mail } from 'lucide-react';
 import Magnetic from '@/components/effects/Magnetic';
 import { InstagramIcon, LinkedInIcon } from '@/components/ui/SocialIcons';
-
-const columns = [
-  {
-    title: 'Explore',
-    links: [
-      { label: 'Past Papers', to: '/past-papers' },
-      { label: 'Courses', to: '/courses' },
-      { label: 'Date Sheets', to: '/date-sheets' },
-      { label: 'Events', to: '/events' },
-      { label: 'Projects Expo', to: '/projects-expo' },
-      { label: 'Forms', to: '/forms' },
-    ],
-  },
-  {
-    title: 'Society',
-    links: [
-      { label: 'About Us', to: '/about' },
-      { label: 'Hierarchy', to: '/about/hierarchy' },
-      { label: 'Timeline', to: '/about/timeline' },
-      { label: 'Gallery', to: '/gallery' },
-      { label: 'Developers', to: '/developers' },
-    ],
-  },
-  {
-    title: 'Support',
-    links: [
-      { label: 'Contribute', to: '/contribute' },
-      { label: 'FAQ & Contact', to: '/faq-contact' },
-      { label: 'Quick Links', to: '/quick-links' },
-      { label: 'Privacy & Disclaimer', to: '/privacy-disclaimer' },
-    ],
-  },
-];
+import BrandLogo from '@/components/ui/BrandLogo';
+import { useCollection } from '@/hooks/useCollection';
+import { footerLinks as footerLinksSeed, footerColumns } from '@/data/footerLinks';
+import type { FooterLinkItem } from '@/types';
 
 function NewsletterForm() {
   const [email, setEmail] = useState('');
@@ -79,6 +50,11 @@ function NewsletterForm() {
 }
 
 export default function Footer() {
+  const { items: allFooterLinks } = useCollection<FooterLinkItem>('footerLinks', footerLinksSeed);
+  const columns = footerColumns
+    .map((title) => ({ title, links: allFooterLinks.filter((l) => l.column === title && l.enabled) }))
+    .filter((col) => col.links.length > 0);
+
   return (
     <footer className="relative overflow-hidden bg-ieee-ink text-slate-300">
       <div className="pointer-events-none absolute -left-32 -top-32 h-80 w-80 rounded-full bg-ieee-orange/10 blur-[110px]" />
@@ -99,9 +75,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-10 pt-12 md:grid-cols-5">
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ieee-orange text-sm font-bold text-white">
-                CS
-              </span>
+              <BrandLogo className="h-9 w-9" />
               <span className="font-display font-bold text-white">IEEE CS Hub</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-slate-400">

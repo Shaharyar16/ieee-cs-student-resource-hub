@@ -20,6 +20,8 @@ export const adminNavGroups: AdminNavGroup[] = [
   {
     title: 'Content',
     items: [
+      { label: 'Navbar', to: '/portal/navbar', icon: 'menu' },
+      { label: 'Footer', to: '/portal/footer', icon: 'link' },
       { label: 'Events', to: '/portal/events', icon: 'calendar' },
       { label: 'Banners', to: '/portal/banners', icon: 'image' },
       { label: 'Past Papers', to: '/portal/papers', icon: 'file' },

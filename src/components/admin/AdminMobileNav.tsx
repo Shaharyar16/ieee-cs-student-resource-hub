@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X, LogOut, ArrowUpRight } from 'lucide-react';
 import Icon from '@/components/ui/Icon';
 import Avatar from '@/components/ui/Avatar';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { adminNavGroups } from '@/components/admin/adminNav';
 import { adminAuthService } from '@/services/adminAuthService';
 
@@ -37,9 +38,7 @@ export default function AdminMobileNav({ open, onClose }: { open: boolean; onClo
           >
             <div className="flex items-center justify-between border-b border-white/5 px-4 py-4">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ieee-orange text-sm font-bold text-white">
-                  CS
-                </span>
+                <BrandLogo className="h-9 w-9" />
                 <div className="leading-tight">
                   <p className="font-display text-sm font-bold text-white">Team Portal</p>
                   <p className="font-mono text-[10px] uppercase tracking-widest text-white/30">IEEE CS Admin</p>

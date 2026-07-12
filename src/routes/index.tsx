@@ -62,6 +62,8 @@ import AdminFormsPage from '@/pages/admin/AdminFormsPage';
 import FormBuilderPage from '@/pages/admin/FormBuilderPage';
 import FormResponsesPage from '@/pages/admin/FormResponsesPage';
 import AdminDateSheetsPage from '@/pages/admin/AdminDateSheetsPage';
+import AdminNavbarPage from '@/pages/admin/AdminNavbarPage';
+import AdminFooterPage from '@/pages/admin/AdminFooterPage';
 
 export const router = createBrowserRouter([
   {
@@ -143,6 +145,8 @@ export const router = createBrowserRouter([
       { path: 'forms/:id/edit', element: <FormBuilderPage /> },
       { path: 'forms/:id/responses', element: <FormResponsesPage /> },
       { path: 'date-sheets', element: <AdminDateSheetsPage /> },
+      { path: 'navbar', element: <AdminNavbarPage /> },
+      { path: 'footer', element: <AdminFooterPage /> },
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'developers', element: <AdminDevelopersPage /> },
       { path: 'settings', element: <AdminSettingsPage /> },

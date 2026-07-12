@@ -2,15 +2,14 @@ import { NavLink, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import Icon from '@/components/ui/Icon';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { adminNavGroups as navGroups } from '@/components/admin/adminNav';
 
 export default function AdminSidebar() {
   return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-white/5 bg-ieee-ink lg:flex">
       <div className="flex items-center gap-2.5 border-b border-white/5 px-5 py-4">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ieee-orange text-sm font-bold text-white shadow-[0_4px_14px_rgba(255,108,12,0.4)]">
-          CS
-        </span>
+        <BrandLogo className="h-9 w-9" />
         <div className="leading-tight">
           <p className="font-display text-sm font-bold text-white">Team Portal</p>
           <p className="font-mono text-[10px] uppercase tracking-widest text-white/30">IEEE CS Admin</p>

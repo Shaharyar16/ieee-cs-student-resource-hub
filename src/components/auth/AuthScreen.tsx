@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, MessageCircle, Repeat2, ShieldCheck } from 'lucide-react';
 import AnimatedBackground from '@/components/effects/AnimatedBackground';
 import AuthForm from '@/components/auth/AuthForm';
+import BrandLogo from '@/components/ui/BrandLogo';
 import { useAuth } from '@/context/AuthContext';
 
 const perks = [
@@ -94,9 +95,7 @@ export default function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
           className="relative w-full overflow-hidden rounded-3xl border border-white/10 bg-white/95 p-7 shadow-2xl backdrop-blur-xl sm:p-9"
         >
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-ieee-orange text-sm font-bold text-white shadow-[0_4px_14px_rgba(255,108,12,0.4)]">
-              CS
-            </span>
+            <BrandLogo className="h-9 w-9" />
             <span className="font-display text-sm font-bold tracking-tight text-slate-900">IEEE CS Hub</span>
           </div>
 

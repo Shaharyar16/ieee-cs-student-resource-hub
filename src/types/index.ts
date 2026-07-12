@@ -321,6 +321,26 @@ export interface TimelineEvent {
   description: string;
 }
 
+export interface NavLinkItem {
+  id: string;
+  label: string;
+  to: string;
+  /** Whether it currently shows in the public navbar. */
+  enabled: boolean;
+}
+
+export type FooterColumn = 'Explore' | 'Society' | 'Support';
+
+export interface FooterLinkItem {
+  id: string;
+  label: string;
+  to: string;
+  /** Which footer column it lives under. */
+  column: FooterColumn;
+  /** Whether it currently shows in the footer. */
+  enabled: boolean;
+}
+
 export interface QuickLink {
   id: string;
   label: string;
