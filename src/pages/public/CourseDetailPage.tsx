@@ -10,6 +10,9 @@ import {
   PencilLine,
   GitBranch,
   ArrowRight,
+  ClipboardList,
+  FileText,
+  Download,
 } from 'lucide-react';
 import { courses as coursesSeed } from '@/data/courses';
 import { teachers } from '@/data/teachers';
@@ -56,7 +59,15 @@ export default function CourseDetailPage() {
   }
 
   const courseTeachers = teachers.filter((t) => course.teacherIds.includes(t.id));
-  const relatedPapers = papers.filter((p) => p.courseId === course.id && p.verification === 'verified').slice(0, 3);
+  const verifiedForCourse = papers.filter((p) => p.courseId === course.id && p.verification === 'verified');
+  // Real exam papers live in the Past Papers archive and preview here.
+  const relatedPapers = verifiedForCourse
+    .filter((p) => p.examType === 'Midterm' || p.examType === 'Final')
+    .slice(0, 3);
+  // Quizzes & assignments aren't past papers — they're course resources.
+  const courseResources = verifiedForCourse.filter(
+    (p) => p.examType === 'Quiz' || p.examType === 'Assignment'
+  );
   const prereqCourses = (course.prerequisites ?? [])
     .map((code) => courses.find((c) => c.code === code))
     .filter((c): c is Course => !!c);
@@ -205,6 +216,50 @@ export default function CourseDetailPage() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* Quizzes & assignments — course resources, not past papers */}
+        <div className="mt-6 rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
+          <div className="flex items-center gap-2 text-ieee-orange">
+            <ClipboardList className="h-5 w-5" />
+            <h2 className="font-display text-lg font-bold text-slate-900">Quizzes &amp; Assignments</h2>
+          </div>
+          <p className="mt-1 text-sm text-slate-500">
+            Practice material for this course. Looking for exam papers? See the{' '}
+            <Link to="/past-papers" data-cursor="link" className="font-semibold text-ieee-orange hover:underline">
+              Past Papers archive
+            </Link>
+            .
+          </p>
+          {courseResources.length === 0 ? (
+            <p className="mt-4 text-sm text-slate-500">No quizzes or assignments added yet.</p>
+          ) : (
+            <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+              {courseResources.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-center gap-3 rounded-xl border border-black/5 bg-cream px-4 py-3"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ieee-orange/10 text-ieee-orange">
+                    {r.examType === 'Quiz' ? <FileText className="h-4 w-4" /> : <ClipboardList className="h-4 w-4" />}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-800">{r.title}</p>
+                    <p className="text-xs text-slate-500">
+                      {r.examType} · {r.term} {r.year}
+                    </p>
+                  </div>
+                  <DownloadButton
+                    url={r.fileUrl}
+                    filename={r.title}
+                    label="Download"
+                    icon={<Download className="h-4 w-4" />}
+                    className="flex shrink-0 items-center gap-1.5 rounded-lg border border-black/10 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </PageSection>
 
