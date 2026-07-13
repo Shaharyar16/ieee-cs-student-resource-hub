@@ -1,5 +1,4 @@
 import { Link, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   BookOpen,
   FlaskConical,
@@ -84,7 +83,6 @@ export default function CourseDetailPage() {
         meta={[
           ...(course.semester ? [{ value: `${course.semester}`, label: 'Semester' }] : []),
           { value: `${course.creditHours}`, label: 'Credit Hours' },
-          { value: `${course.syllabus.length}`, label: 'Weeks' },
           { value: `${relatedPapers.length}`, label: 'Past Papers' },
         ]}
       >
@@ -94,8 +92,32 @@ export default function CourseDetailPage() {
       </PageHero>
 
       <PageSection tone="cream" top>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Outcomes */}
+        {/* 1 — Course Materials */}
+        <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
+          <div className="flex items-center gap-2 text-ieee-orange">
+            <BookOpen className="h-5 w-5" />
+            <h2 className="font-display text-lg font-bold text-slate-900">Course Materials</h2>
+          </div>
+          <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+            <DownloadButton
+              url={course.cdfUrl}
+              filename={`${course.code}-CDF`}
+              label="Download CDF"
+              icon={<BookOpen className="h-4 w-4 text-ieee-orange" />}
+              className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+            />
+            <DownloadButton
+              url={course.labManualUrl}
+              filename={`${course.code}-Lab-Manual`}
+              label="Download Lab Manual"
+              icon={<FlaskConical className="h-4 w-4 text-ieee-orange" />}
+              className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+            />
+          </div>
+        </div>
+
+        {/* 2 & 3 — Learning Outcomes + Study Tips */}
+        <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
             <div className="flex items-center gap-2 text-ieee-orange">
               <Target className="h-5 w-5" />
@@ -111,7 +133,6 @@ export default function CourseDetailPage() {
             </ul>
           </div>
 
-          {/* Tips */}
           <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
             <div className="flex items-center gap-2 text-ieee-orange">
               <Lightbulb className="h-5 w-5" />
@@ -128,7 +149,30 @@ export default function CourseDetailPage() {
           </div>
         </div>
 
-        {/* Prerequisites & pathway */}
+        {/* 4 — Useful Links */}
+        <div className="mt-6 rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
+          <div className="flex items-center gap-2 text-ieee-orange">
+            <ExternalLink className="h-5 w-5" />
+            <h2 className="font-display text-lg font-bold text-slate-900">Useful Links</h2>
+          </div>
+          <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+            {course.usefulLinks.length === 0 && <p className="text-sm text-slate-500">No links added yet.</p>}
+            {course.usefulLinks.map((link) => (
+              <a
+                key={link.url}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                data-cursor="link"
+                className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
+              >
+                <ExternalLink className="h-4 w-4 text-ieee-orange" /> {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* 5 — Prerequisites & pathway */}
         <div className="mt-6 rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
           <div className="flex items-center gap-2 text-ieee-orange">
             <GitBranch className="h-5 w-5" />
@@ -177,48 +221,7 @@ export default function CourseDetailPage() {
           </div>
         </div>
 
-        {/* Materials + Links */}
-        <div className="mt-6 grid gap-6 sm:grid-cols-2">
-          <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
-            <h3 className="font-display font-bold text-slate-900">Course Materials</h3>
-            <div className="mt-4 flex flex-col gap-2.5">
-              <DownloadButton
-                url={course.cdfUrl}
-                filename={`${course.code}-CDF`}
-                label="Download CDF"
-                icon={<BookOpen className="h-4 w-4 text-ieee-orange" />}
-                className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
-              />
-              <DownloadButton
-                url={course.labManualUrl}
-                filename={`${course.code}-Lab-Manual`}
-                label="Download Lab Manual"
-                icon={<FlaskConical className="h-4 w-4 text-ieee-orange" />}
-                className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
-              />
-            </div>
-          </div>
-          <div className="rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
-            <h3 className="font-display font-bold text-slate-900">Useful Links</h3>
-            <div className="mt-4 flex flex-col gap-2.5">
-              {course.usefulLinks.length === 0 && <p className="text-sm text-slate-500">No links added yet.</p>}
-              {course.usefulLinks.map((link) => (
-                <a
-                  key={link.url}
-                  href={link.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  data-cursor="link"
-                  className="flex items-center gap-2 rounded-xl border border-black/5 bg-cream px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-ieee-orange/40 hover:text-ieee-orange"
-                >
-                  <ExternalLink className="h-4 w-4 text-ieee-orange" /> {link.label}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Quizzes & assignments — course resources, not past papers */}
+        {/* 6 — Quizzes & assignments — course resources, not past papers */}
         <div className="mt-6 rounded-3xl border border-black/5 bg-white p-7 shadow-sm">
           <div className="flex items-center gap-2 text-ieee-orange">
             <ClipboardList className="h-5 w-5" />
@@ -260,28 +263,6 @@ export default function CourseDetailPage() {
               ))}
             </div>
           )}
-        </div>
-      </PageSection>
-
-      {/* Syllabus */}
-      <PageSection tone="white">
-        <SectionHeading eyebrow={`${course.syllabus.length}-Week Plan`} title="Weekly syllabus" flourish />
-        <div className="mt-10 grid gap-3 sm:grid-cols-2">
-          {course.syllabus.map((w, i) => (
-            <motion.div
-              key={w.week}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.4 }}
-              transition={{ duration: 0.3, delay: (i % 2) * 0.05 }}
-              className="flex items-center gap-4 rounded-2xl border border-black/5 bg-cream px-5 py-3.5 transition-colors hover:border-ieee-orange/30"
-            >
-              <span className="flex h-9 w-14 shrink-0 items-center justify-center rounded-lg bg-ieee-orange/10 font-mono text-xs font-bold text-ieee-orange">
-                W{w.week}
-              </span>
-              <span className="text-sm text-slate-700">{w.topic}</span>
-            </motion.div>
-          ))}
         </div>
       </PageSection>
 
